@@ -11,6 +11,9 @@
     "main": ["ru.neon.cyberpunk.CyberpunkMod"],
     "client": ["ru.neon.cyberpunk.CyberpunkClient"]
   },
+  "mixins": [
+    "cyberpunk.mixins.json"
+  ],
   "depends": {
     "fabricloader": ">=0.16.0",
     "minecraft": "~1.21.8",
