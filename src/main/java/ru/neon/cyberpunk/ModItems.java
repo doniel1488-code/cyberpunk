@@ -13,6 +13,7 @@ public final class ModItems {
     public static final Item NEURAL_ACCELERATOR = registerImplant("neural_accelerator", 0);
     public static final Item OPTICAL_CAMO = registerImplant("optical_camo", 1);
     public static final Item BERSERK_MODULE = registerImplant("berserk_module", 2);
+    public static final Item SANDEVISTAN = registerImplant("sandevistan", 3);
 
     private ModItems() {
     }
@@ -29,6 +30,7 @@ public final class ModItems {
             entries.add(NEURAL_ACCELERATOR);
             entries.add(OPTICAL_CAMO);
             entries.add(BERSERK_MODULE);
+            entries.add(SANDEVISTAN);
         });
     }
 }
