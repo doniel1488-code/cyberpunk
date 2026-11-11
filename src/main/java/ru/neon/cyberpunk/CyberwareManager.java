@@ -1,6 +1,7 @@
 package ru.neon.cyberpunk;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
@@ -37,7 +38,6 @@ public final class CyberwareManager {
     private static final Map<UUID, Float> STRESS = new HashMap<>();
     private static final Map<UUID, Integer> STRESS_TIER = new HashMap<>();
     private static final Map<UUID, Long> OVERLOAD_UNTIL = new HashMap<>();
-    private static final Map<UUID, Integer> RAGE_TARGETS = new HashMap<>();
     private static final Map<UUID, Long> RAGE_NEXT_ATTACK = new HashMap<>();
     private static final Map<UUID, Long> GORILLA_HIT_READY = new HashMap<>();
 
@@ -57,6 +57,69 @@ public final class CyberwareManager {
             case BLOOD_PUMP -> "cyberpunk.implant.blood_pump";
             default -> throw new IllegalArgumentException("Unknown implant type: " + implantType);
         };
+    }
+
+    public static String getActivationKeyTranslation(int implantType) {
+        return switch (implantType) {
+            case ACCELERATOR -> "key.cyberpunk.neural_accelerator";
+            case OPTICAL_CAMO -> "key.cyberpunk.optical_camo";
+            case BERSERK -> "key.cyberpunk.berserk";
+            case SANDEVISTAN -> "key.cyberpunk.sandevistan";
+            case MANTIS_ARMS -> "key.cyberpunk.mantis_arms";
+            case GORILLA_ARMS -> "key.cyberpunk.gorilla_arms";
+            case KERENZIKOV -> "key.cyberpunk.kerenzikov";
+            case SUBDERMAL_ARMOR -> "message.cyberpunk.passive";
+            case BLOOD_PUMP -> "key.cyberpunk.blood_pump";
+            default -> "message.cyberpunk.passive";
+        };
+    }
+
+    public static void uninstall(ServerPlayerEntity player, int implantType) {
+        UUID uuid = player.getUuid();
+        if (!player.getCommandTags().remove(getInstallTag(implantType))) {
+            player.sendMessage(Text.translatable("message.cyberpunk.not_installed"), true);
+            return;
+        }
+        ActiveAbility active = ACTIVE.get(uuid);
+        if (active != null && active.implantType() == implantType) {
+            ACTIVE.remove(uuid);
+            if (implantType == SANDEVISTAN) broadcastSandevistanTrail(player, 0);
+            sendVisual(player, 11, 10, 34);
+        }
+        Map<Integer, Long> cooldowns = COOLDOWNS.get(uuid);
+        if (cooldowns != null) {
+            cooldowns.remove(implantType);
+            if (cooldowns.isEmpty()) COOLDOWNS.remove(uuid);
+        }
+        player.sendMessage(Text.translatable("message.cyberpunk.implant_uninstalled"), true);
+        player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.BLOCK_BEACON_DEACTIVATE,
+                SoundCategory.PLAYERS, 0.65f, 1.15f);
+    }
+
+    public static void sendStatus(ServerPlayerEntity player) {
+        float load = STRESS.getOrDefault(player.getUuid(), 0.0f);
+        player.sendMessage(Text.translatable("message.cyberpunk.status_header", Math.round(load)), false);
+        for (int type = ACCELERATOR; type <= BLOOD_PUMP; type++) {
+            String nameKey = switch (type) {
+                case ACCELERATOR -> "item.cyberpunk.neural_accelerator";
+                case OPTICAL_CAMO -> "item.cyberpunk.optical_camo";
+                case BERSERK -> "item.cyberpunk.berserk_module";
+                case SANDEVISTAN -> "item.cyberpunk.sandevistan";
+                case MANTIS_ARMS -> "item.cyberpunk.mantis_arms";
+                case GORILLA_ARMS -> "item.cyberpunk.gorilla_arms";
+                case KERENZIKOV -> "item.cyberpunk.kerenzikov";
+                case SUBDERMAL_ARMOR -> "item.cyberpunk.subdermal_armor";
+                case BLOOD_PUMP -> "item.cyberpunk.blood_pump";
+                default -> "message.cyberpunk.activated";
+            };
+            boolean installed = player.getCommandTags().contains(getInstallTag(type));
+            Text line = Text.literal("• ").append(Text.translatable(nameKey))
+                    .append(Text.literal(" — "))
+                    .append(Text.translatable(installed ? "message.cyberpunk.status_installed" : "message.cyberpunk.status_missing"))
+                    .append(Text.literal(" | "))
+                    .append(Text.translatable(getActivationKeyTranslation(type)));
+            player.sendMessage(line, false);
+        }
     }
 
     public static void activate(ServerPlayerEntity player, int implantType) {
@@ -344,7 +407,6 @@ public final class CyberwareManager {
         OVERLOAD_UNTIL.put(uuid, now + 300L);
         STRESS.put(uuid, 30.0f);
         STRESS_TIER.put(uuid, 0);
-        RAGE_TARGETS.remove(uuid);
         RAGE_NEXT_ATTACK.put(uuid, now + 8L);
 
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 28, 0, false, false, true));
@@ -371,8 +433,6 @@ public final class CyberwareManager {
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 8, 1, true, false, false));
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 8, 1, true, false, false));
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 8, 0, true, false, false));
-        player.setSprinting(true);
-
         if (player.age % 4 == 0) {
             ServerWorld world = (ServerWorld) player.getWorld();
             world.spawnParticles(ParticleTypes.FLAME, player.getX(), player.getY() + 0.9, player.getZ(),
@@ -382,80 +442,38 @@ public final class CyberwareManager {
             world.spawnParticles(ParticleTypes.SOUL, player.getX(), player.getY() + 0.8, player.getZ(),
                     2, 0.25, 0.35, 0.25, 0.02);
         }
-        if (player.age % 25 == 0) sendVisual(player, 10, 7, 90);
 
-        LivingEntity target = null;
-        Integer targetId = RAGE_TARGETS.get(player.getUuid());
-        if (targetId != null) {
-            net.minecraft.entity.Entity entity = player.getWorld().getEntityById(targetId);
-            if (entity instanceof LivingEntity living && isRageTarget(player, living)
-                    && player.squaredDistanceTo(living) <= 24.0 * 24.0) {
-                target = living;
+        // Preserve camera and movement input: rage strikes visible targets around the player.
+        UUID uuid = player.getUuid();
+        if (now < RAGE_NEXT_ATTACK.getOrDefault(uuid, 0L)) return;
+        ServerWorld world = (ServerWorld) player.getWorld();
+        var targets = world.getEntitiesByClass(
+                LivingEntity.class,
+                player.getBoundingBox().expand(3.5, 1.5, 3.5),
+                entity -> entity != player && entity.isAlive() && entity.isAttackable()
+                        && (!(entity instanceof PlayerEntity other)
+                        || (!other.isCreative() && !other.isSpectator()))
+        );
+        int hits = 0;
+        for (LivingEntity target : targets) {
+            if (!player.canSee(target)) continue;
+            if (target.damage(player.getDamageSources().playerAttack(player), 5.0f)) {
+                target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 12, 0, true, true, true));
+                world.spawnParticles(ParticleTypes.CRIT, target.getX(), target.getBodyY(0.55), target.getZ(),
+                        7, 0.22, 0.32, 0.22, 0.12);
+                world.spawnParticles(ParticleTypes.DAMAGE_INDICATOR,
+                        target.getX(), target.getBodyY(0.55), target.getZ(),
+                        4, 0.18, 0.25, 0.18, 0.08);
+                hits++;
             }
         }
-
-        if (target == null) {
-            target = findNearestRageTarget(player);
-            if (target != null) RAGE_TARGETS.put(player.getUuid(), target.getId());
-            else RAGE_TARGETS.remove(player.getUuid());
-        }
-        if (target == null) return;
-
-        Vec3d delta = target.getPos().subtract(player.getPos());
-        double horizontalDistance = Math.sqrt(delta.x * delta.x + delta.z * delta.z);
-        float yaw = (float) (Math.atan2(-delta.x, delta.z) * (180.0 / Math.PI));
-        float pitch = (float) (-Math.atan2(delta.y + target.getHeight() * 0.35,
-                Math.max(0.001, horizontalDistance)) * (180.0 / Math.PI));
-        player.setYaw(yaw);
-        player.setBodyYaw(yaw);
-        player.setHeadYaw(yaw);
-        player.setPitch(pitch);
-
-        if (horizontalDistance > 2.65 || Math.abs(delta.y) > 2.0) {
-            double speed = 0.40;
-            double vx = horizontalDistance < 0.001 ? 0.0 : delta.x / horizontalDistance * speed;
-            double vz = horizontalDistance < 0.001 ? 0.0 : delta.z / horizontalDistance * speed;
-            double vy = player.getVelocity().y;
-            if (player.isOnGround() && target.getY() > player.getY() + 0.9) vy = 0.42;
-            player.setVelocity(vx, vy, vz);
-            return;
-        }
-
-        long readyAt = RAGE_NEXT_ATTACK.getOrDefault(player.getUuid(), 0L);
-        if (now >= readyAt) {
-            player.attack(target);
+        if (hits > 0) {
             player.swingHand(net.minecraft.util.Hand.MAIN_HAND);
-            target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 16, 0, false, true, true));
-            ServerWorld world = (ServerWorld) player.getWorld();
-            world.spawnParticles(ParticleTypes.CRIT, target.getX(), target.getBodyY(0.55), target.getZ(),
-                    8, 0.25, 0.35, 0.25, 0.12);
-            world.spawnParticles(ParticleTypes.DAMAGE_INDICATOR, target.getX(), target.getBodyY(0.55), target.getZ(),
-                    4, 0.22, 0.3, 0.22, 0.08);
-            world.playSound(null, target.getBlockPos(), SoundEvents.ENTITY_PLAYER_ATTACK_STRONG,
-                    SoundCategory.PLAYERS, 0.75f, 0.7f + player.getRandom().nextFloat() * 0.25f);
-            RAGE_NEXT_ATTACK.put(player.getUuid(), now + 10L);
+            world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_PLAYER_ATTACK_STRONG,
+                    SoundCategory.PLAYERS, 0.8f, 0.68f + player.getRandom().nextFloat() * 0.25f);
+            sendVisual(player, 10, 5, 72);
         }
-    }
-
-    private static LivingEntity findNearestRageTarget(ServerPlayerEntity player) {
-        LivingEntity nearest = null;
-        double nearestDistance = 24.0 * 24.0;
-        for (LivingEntity candidate : player.getWorld().getEntitiesByClass(
-                LivingEntity.class, player.getBoundingBox().expand(24.0),
-                entity -> isRageTarget(player, entity))) {
-            double distance = player.squaredDistanceTo(candidate);
-            if (distance < nearestDistance) {
-                nearestDistance = distance;
-                nearest = candidate;
-            }
-        }
-        return nearest;
-    }
-
-    private static boolean isRageTarget(ServerPlayerEntity player, LivingEntity candidate) {
-        if (candidate == player || !candidate.isAlive() || !candidate.isAttackable()) return false;
-        if (candidate instanceof PlayerEntity other && (other.isCreative() || other.isSpectator())) return false;
-        return true;
+        RAGE_NEXT_ATTACK.put(uuid, now + 10L);
     }
 
     public static boolean isTimeDilated(MobEntity mob) {
@@ -495,7 +513,6 @@ public final class CyberwareManager {
         STRESS.remove(uuid);
         STRESS_TIER.remove(uuid);
         OVERLOAD_UNTIL.remove(uuid);
-        RAGE_TARGETS.remove(uuid);
         RAGE_NEXT_ATTACK.remove(uuid);
         GORILLA_HIT_READY.remove(uuid);
     }
@@ -509,6 +526,16 @@ public final class CyberwareManager {
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 25, 0, true, false, false));
         }
 
+        boolean fullCyberwareArmor =
+                player.getEquippedStack(EquipmentSlot.HEAD).isOf(ModItems.CYBERWARE_HELMET)
+                && player.getEquippedStack(EquipmentSlot.CHEST).isOf(ModItems.CYBERWARE_CHESTPLATE)
+                && player.getEquippedStack(EquipmentSlot.LEGS).isOf(ModItems.CYBERWARE_LEGGINGS)
+                && player.getEquippedStack(EquipmentSlot.FEET).isOf(ModItems.CYBERWARE_BOOTS);
+        if (fullCyberwareArmor) {
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 25, 1, true, false, false));
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 25, 0, true, false, false));
+        }
+
         Long rageEndsAt = OVERLOAD_UNTIL.get(uuid);
         if (rageEndsAt != null && now < rageEndsAt) {
             tickCyberpsychosisRage(player, now);
@@ -520,9 +547,7 @@ public final class CyberwareManager {
         }
         if (rageEndsAt != null) {
             OVERLOAD_UNTIL.remove(uuid);
-            RAGE_TARGETS.remove(uuid);
             RAGE_NEXT_ATTACK.remove(uuid);
-            player.setSprinting(false);
             player.sendMessage(Text.translatable("message.cyberpunk.cyberpsychosis_recovered"), true);
             sendVisual(player, 11, 18, 82);
         }
