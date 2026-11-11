@@ -16,20 +16,19 @@ public final class CyberpunkClient implements ClientModInitializer {
 
     @Override
     public void onInitializeClient() {
-        acceleratorKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.cyberpunk.neural_accelerator", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_V,
-                "category.cyberpunk.implants"));
-        opticalCamoKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.cyberpunk.optical_camo", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_C,
-                "category.cyberpunk.implants"));
-        berserkKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.cyberpunk.berserk", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_X,
-                "category.cyberpunk.implants"));
-        sandevistanKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
-                "key.cyberpunk.sandevistan", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_B,
-                "category.cyberpunk.implants"));
+        acceleratorKey = register("key.cyberpunk.neural_accelerator", GLFW.GLFW_KEY_V);
+        opticalCamoKey = register("key.cyberpunk.optical_camo", GLFW.GLFW_KEY_C);
+        berserkKey = register("key.cyberpunk.berserk", GLFW.GLFW_KEY_X);
+        sandevistanKey = register("key.cyberpunk.sandevistan", GLFW.GLFW_KEY_B);
+
+        CyberpunkVisuals.register();
+        ClientPlayNetworking.registerGlobalReceiver(CyberpunkVisualPayload.ID, (payload, context) ->
+                context.client().execute(() -> CyberpunkVisuals.trigger(payload)));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
+            if (client.player == null || client.world == null) {
+                return;
+            }
             while (acceleratorKey.wasPressed()) {
                 ClientPlayNetworking.send(new ActivateImplantPayload(0));
             }
@@ -43,5 +42,10 @@ public final class CyberpunkClient implements ClientModInitializer {
                 ClientPlayNetworking.send(new ActivateImplantPayload(3));
             }
         });
+    }
+
+    private static KeyBinding register(String translationKey, int keyCode) {
+        return KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                translationKey, InputUtil.Type.KEYSYM, keyCode, "category.cyberpunk.implants"));
     }
 }
