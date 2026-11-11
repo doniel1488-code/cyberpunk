@@ -35,7 +35,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          JAR="build/libs/cyberpunk-fabric-0.1.0-alpha.6.jar"
+          JAR="build/libs/cyberpunk-fabric-0.1.0-alpha.7.jar"
           test -f "$JAR"
           jar tf "$JAR" > /tmp/jar-contents.txt
           grep -q 'fabric.mod.json' /tmp/jar-contents.txt
@@ -45,6 +45,7 @@ jobs:
           grep -q 'SandevistanTrail.class' /tmp/jar-contents.txt
           grep -q 'cyberpunk.mixins.json' /tmp/jar-contents.txt
           grep -q 'MobEntitySandevistanMixin.class' /tmp/jar-contents.txt
+          grep -q 'ModArmorMaterials.class' /tmp/jar-contents.txt
           grep -q 'assets/cyberpunk/lang/ru_ru.json' /tmp/jar-contents.txt
           grep -q 'assets/cyberpunk/textures/item/sandevistan.png' /tmp/jar-contents.txt
           grep -q 'assets/cyberpunk/models/item/sandevistan.json' /tmp/jar-contents.txt
@@ -57,13 +58,24 @@ jobs:
           done
           unzip -p "$JAR" assets/cyberpunk/lang/ru_ru.json | grep -q '"item.cyberpunk.blood_pump"'
           unzip -p "$JAR" assets/cyberpunk/lang/ru_ru.json | grep -q '"item.cyberpunk.gorilla_arms"'
+          for item in cybernetic_alloy servo_motor neural_processor synthetic_fiber power_cell cyberware_helmet cyberware_chestplate cyberware_leggings cyberware_boots; do
+            grep -qx "assets/cyberpunk/textures/item/$item.png" /tmp/jar-contents.txt
+            grep -qx "assets/cyberpunk/models/item/$item.json" /tmp/jar-contents.txt
+            grep -qx "assets/cyberpunk/items/$item.json" /tmp/jar-contents.txt
+            grep -qx "data/cyberpunk/recipe/$item.json" /tmp/jar-contents.txt
+          done
+          grep -qx 'assets/cyberpunk/equipment/cyberware.json' /tmp/jar-contents.txt
+          grep -qx 'assets/cyberpunk/textures/entity/equipment/humanoid/cyberware.png' /tmp/jar-contents.txt
+          grep -qx 'assets/cyberpunk/textures/entity/equipment/humanoid_leggings/cyberware_leggings.png' /tmp/jar-contents.txt
+          grep -qx 'data/cyberpunk/tags/item/repairs_cyberware_armor.json' /tmp/jar-contents.txt
+          unzip -p "$JAR" assets/cyberpunk/lang/ru_ru.json | grep -q '"item.cyberpunk.cyberware_helmet"'
 
       - name: Validate JSON resources and locale parity
         shell: bash
         run: |
           python - <<'PY'
           import json, zipfile
-          jar = 'build/libs/cyberpunk-fabric-0.1.0-alpha.6.jar'
+          jar = 'build/libs/cyberpunk-fabric-0.1.0-alpha.7.jar'
           with zipfile.ZipFile(jar) as archive:
               for name in archive.namelist():
                   if name.endswith('.json'):
@@ -77,7 +89,7 @@ jobs:
       - name: Upload mod JAR
         uses: actions/upload-artifact@v4
         with:
-          name: cyberpunk-fabric-1.21.8-alpha.6
-          path: build/libs/cyberpunk-fabric-0.1.0-alpha.6.jar
+          name: cyberpunk-fabric-1.21.8-alpha.7
+          path: build/libs/cyberpunk-fabric-0.1.0-alpha.7.jar
           if-no-files-found: error
           retention-days: 30

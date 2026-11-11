@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.0-alpha.7
+
+- Removed the full-screen Sandevistan tint and kept status accents on the outer HUD frame.
+- Fixed visual effect countdown to advance on client ticks instead of HUD render calls.
+- Reworked cyberpsychosis into visible close-range multi-target strikes without forcing player movement or camera direction.
+- Added implant removal: right-click with another chip of the same type; the removal chip is kept.
+- Added the /cyberware status command with installed state, activation key and neural load.
+- Added cybernetic alloy, servo motor, neural processor, synthetic fiber and power cell crafting components.
+- Added a wearable four-piece cyberware armor set, repair tag, crafting recipes, custom equipment model textures and full-set Resistance II / Speed I bonus.
+- Added matching RU/EN translations and CI checks for the new item and armor resources.
+
 ## 0.1.0-alpha.6
 
 - Added Mantis Blades as a registered implant item with a dedicated keybind, recipe, model, texture and localization.
