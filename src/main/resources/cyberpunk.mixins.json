@@ -1,0 +1,13 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "ru.neon.cyberpunk.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "refmap": "cyberpunk.refmap.json",
+  "mixins": [
+    "MobEntitySandevistanMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
