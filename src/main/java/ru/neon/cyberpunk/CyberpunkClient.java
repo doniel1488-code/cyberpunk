@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.minecraft.client.option.KeyBinding;
 import net.minecraft.client.util.InputUtil;
+import net.minecraft.text.Text;
 import org.lwjgl.glfw.GLFW;
 
 public final class CyberpunkClient implements ClientModInitializer {
@@ -50,6 +51,23 @@ public final class CyberpunkClient implements ClientModInitializer {
             while (kerenzikovKey.wasPressed()) ClientPlayNetworking.send(new ActivateImplantPayload(6));
             while (bloodPumpKey.wasPressed()) ClientPlayNetworking.send(new ActivateImplantPayload(8));
         });
+    }
+
+    public static String getActivationKeyLabel(int implantType) {
+        KeyBinding binding = switch (implantType) {
+            case 0 -> acceleratorKey;
+            case 1 -> opticalCamoKey;
+            case 2 -> berserkKey;
+            case 3 -> sandevistanKey;
+            case 4 -> mantisKey;
+            case 5 -> gorillaKey;
+            case 6 -> kerenzikovKey;
+            case 8 -> bloodPumpKey;
+            default -> null;
+        };
+        return binding == null
+                ? Text.translatable("message.cyberpunk.passive").getString()
+                : binding.getBoundKeyLocalizedText().getString();
     }
 
     private static KeyBinding register(String translationKey, int keyCode) {

@@ -141,7 +141,7 @@ public final class CyberwareScreen extends Screen {
                 Text.literal(textRenderer.trimToWidth(Text.translatable(CARDS[index].nameKey()).getString(), 96)),
                 x + 30, y + 8, 0xFFE6F4F8, false);
         context.drawText(textRenderer,
-                Text.literal(textRenderer.trimToWidth(Text.translatable(CARDS[index].keyKey()).getString(), 96)),
+                Text.literal(textRenderer.trimToWidth("[" + CyberpunkClient.getActivationKeyLabel(index) + "]", 96)),
                 x + 30, y + 21, 0xFF82B7C6, false);
         context.drawText(textRenderer,
                 Text.literal(textRenderer.trimToWidth(Text.translatable(CARDS[index].descriptionKey()).getString(), 120)),
