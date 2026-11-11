@@ -22,25 +22,19 @@ public final class CyberpunkClient implements ClientModInitializer {
         sandevistanKey = register("key.cyberpunk.sandevistan", GLFW.GLFW_KEY_B);
 
         CyberpunkVisuals.register();
+        SandevistanTrail.register();
         ClientPlayNetworking.registerGlobalReceiver(CyberpunkVisualPayload.ID, (payload, context) ->
                 context.client().execute(() -> CyberpunkVisuals.trigger(payload)));
+        ClientPlayNetworking.registerGlobalReceiver(SandevistanTrailPayload.ID, (payload, context) ->
+                context.client().execute(() -> SandevistanTrail.accept(payload)));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
-            if (client.player == null || client.world == null) {
-                return;
-            }
-            while (acceleratorKey.wasPressed()) {
-                ClientPlayNetworking.send(new ActivateImplantPayload(0));
-            }
-            while (opticalCamoKey.wasPressed()) {
-                ClientPlayNetworking.send(new ActivateImplantPayload(1));
-            }
-            while (berserkKey.wasPressed()) {
-                ClientPlayNetworking.send(new ActivateImplantPayload(2));
-            }
-            while (sandevistanKey.wasPressed()) {
-                ClientPlayNetworking.send(new ActivateImplantPayload(3));
-            }
+            if (client.player == null || client.world == null) return;
+            SandevistanTrail.tick(client);
+            while (acceleratorKey.wasPressed()) ClientPlayNetworking.send(new ActivateImplantPayload(0));
+            while (opticalCamoKey.wasPressed()) ClientPlayNetworking.send(new ActivateImplantPayload(1));
+            while (berserkKey.wasPressed()) ClientPlayNetworking.send(new ActivateImplantPayload(2));
+            while (sandevistanKey.wasPressed()) ClientPlayNetworking.send(new ActivateImplantPayload(3));
         });
     }
 

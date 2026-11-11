@@ -2,6 +2,7 @@ package ru.neon.cyberpunk;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +20,8 @@ public final class CyberpunkMod implements ModInitializer {
         ModItems.initialize();
         CyberpunkNetworking.initialize();
         ServerTickEvents.END_SERVER_TICK.register(CyberwareManager::tick);
+        ServerPlayConnectionEvents.DISCONNECT.register((handler, server) ->
+                CyberwareManager.removePlayer(handler.player.getUuid()));
         LOGGER.info("Cyberpunk Fabric initialized");
     }
 }

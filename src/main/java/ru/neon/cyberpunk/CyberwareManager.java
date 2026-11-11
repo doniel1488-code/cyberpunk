@@ -31,6 +31,8 @@ public final class CyberwareManager {
     private static final Map<UUID, Float> STRESS = new HashMap<>();
     private static final Map<UUID, Integer> STRESS_TIER = new HashMap<>();
     private static final Map<UUID, Long> OVERLOAD_UNTIL = new HashMap<>();
+    private static final Map<UUID, Integer> RAGE_TARGETS = new HashMap<>();
+    private static final Map<UUID, Long> RAGE_NEXT_ATTACK = new HashMap<>();
 
     private CyberwareManager() {
     }
@@ -94,6 +96,7 @@ public final class CyberwareManager {
         playerCooldowns.put(implantType, now + cooldown);
         activationBurst(player, implantType);
         sendVisual(player, implantType + 1, 12, 112);
+        if (implantType == SANDEVISTAN) broadcastSandevistanTrail(player, duration + 20);
         player.sendMessage(Text.translatable(activationMessage(implantType)), true);
     }
 
@@ -166,12 +169,17 @@ public final class CyberwareManager {
 
     private static boolean isOverloaded(UUID uuid, long now) {
         Long until = OVERLOAD_UNTIL.get(uuid);
-        if (until == null) return false;
-        if (now >= until) {
-            OVERLOAD_UNTIL.remove(uuid);
-            return false;
+        return until != null && now < until;
+    }
+
+    private static void broadcastSandevistanTrail(ServerPlayerEntity owner, int durationTicks) {
+        SandevistanTrailPayload payload = new SandevistanTrailPayload(owner.getId(), durationTicks);
+        for (PlayerEntity candidate : owner.getWorld().getPlayers()) {
+            if (candidate instanceof ServerPlayerEntity viewer
+                    && viewer.squaredDistanceTo(owner) <= 144.0 * 144.0) {
+                ServerPlayNetworking.send(viewer, payload);
+            }
         }
-        return true;
     }
 
     private static void addStress(ServerPlayerEntity player, float amount) {
@@ -210,15 +218,22 @@ public final class CyberwareManager {
         long now = player.getWorld().getTime();
         if (isOverloaded(uuid, now)) return;
 
-        ACTIVE.remove(uuid);
+        ActiveAbility interrupted = ACTIVE.remove(uuid);
+        if (interrupted != null && interrupted.implantType() == SANDEVISTAN) {
+            broadcastSandevistanTrail(player, 0);
+        }
+
+        // A short seizure is followed by 15 seconds of uncontrolled cyberpsycho rage.
         OVERLOAD_UNTIL.put(uuid, now + 300L);
         STRESS.put(uuid, 30.0f);
         STRESS_TIER.put(uuid, 0);
+        RAGE_TARGETS.remove(uuid);
+        RAGE_NEXT_ATTACK.put(uuid, now + 8L);
 
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 45, 0, false, false, true));
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 300, 1, false, false, true));
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 300, 1, false, false, true));
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 120, 1, false, false, true));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 28, 0, false, false, true));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 55, 1, false, false, true));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 35, 0, false, false, true));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 24, 0, false, false, true));
         player.sendMessage(Text.translatable("message.cyberpunk.cyberpsychosis"), true);
         player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.ENTITY_WARDEN_HEARTBEAT,
                 SoundCategory.PLAYERS, 1.0f, 0.65f);
@@ -228,7 +243,102 @@ public final class CyberwareManager {
                 35, 0.7, 0.8, 0.7, 0.12);
         world.spawnParticles(ParticleTypes.SOUL, player.getX(), player.getY() + 1.0, player.getZ(),
                 55, 0.75, 0.9, 0.75, 0.06);
-        sendVisual(player, 10, 50, 160);
+        world.spawnParticles(ParticleTypes.FLAME, player.getX(), player.getY() + 0.9, player.getZ(),
+                22, 0.5, 0.55, 0.5, 0.035);
+        sendVisual(player, 10, 70, 175);
+    }
+
+    private static void tickCyberpsychosisRage(ServerPlayerEntity player, long now) {
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 8, 3, true, false, false));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 8, 2, true, false, false));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 8, 1, true, false, false));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 8, 1, true, false, false));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 8, 0, true, false, false));
+        player.setSprinting(true);
+
+        if (player.age % 4 == 0) {
+            ServerWorld world = (ServerWorld) player.getWorld();
+            world.spawnParticles(ParticleTypes.FLAME, player.getX(), player.getY() + 0.9, player.getZ(),
+                    4, 0.35, 0.5, 0.35, 0.025);
+            world.spawnParticles(ParticleTypes.DAMAGE_INDICATOR, player.getX(), player.getY() + 1.0, player.getZ(),
+                    2, 0.3, 0.35, 0.3, 0.08);
+            world.spawnParticles(ParticleTypes.SOUL, player.getX(), player.getY() + 0.8, player.getZ(),
+                    2, 0.25, 0.35, 0.25, 0.02);
+        }
+        if (player.age % 25 == 0) sendVisual(player, 10, 7, 90);
+
+        LivingEntity target = null;
+        Integer targetId = RAGE_TARGETS.get(player.getUuid());
+        if (targetId != null) {
+            net.minecraft.entity.Entity entity = player.getWorld().getEntityById(targetId);
+            if (entity instanceof LivingEntity living && isRageTarget(player, living)
+                    && player.squaredDistanceTo(living) <= 24.0 * 24.0) {
+                target = living;
+            }
+        }
+
+        if (target == null) {
+            target = findNearestRageTarget(player);
+            if (target != null) RAGE_TARGETS.put(player.getUuid(), target.getId());
+            else RAGE_TARGETS.remove(player.getUuid());
+        }
+        if (target == null) return;
+
+        Vec3d delta = target.getPos().subtract(player.getPos());
+        double horizontalDistance = Math.sqrt(delta.x * delta.x + delta.z * delta.z);
+        float yaw = (float) (Math.atan2(-delta.x, delta.z) * (180.0 / Math.PI));
+        float pitch = (float) (-Math.atan2(delta.y + target.getHeight() * 0.35,
+                Math.max(0.001, horizontalDistance)) * (180.0 / Math.PI));
+        player.setYaw(yaw);
+        player.setBodyYaw(yaw);
+        player.setHeadYaw(yaw);
+        player.setPitch(pitch);
+
+        if (horizontalDistance > 2.65 || Math.abs(delta.y) > 2.0) {
+            double speed = 0.40;
+            double vx = horizontalDistance < 0.001 ? 0.0 : delta.x / horizontalDistance * speed;
+            double vz = horizontalDistance < 0.001 ? 0.0 : delta.z / horizontalDistance * speed;
+            double vy = player.getVelocity().y;
+            if (player.isOnGround() && target.getY() > player.getY() + 0.9) vy = 0.42;
+            player.setVelocity(vx, vy, vz);
+            return;
+        }
+
+        long readyAt = RAGE_NEXT_ATTACK.getOrDefault(player.getUuid(), 0L);
+        if (now >= readyAt) {
+            player.attack(target);
+            player.swingHand(net.minecraft.util.Hand.MAIN_HAND);
+            target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 16, 0, false, true, true));
+            ServerWorld world = (ServerWorld) player.getWorld();
+            world.spawnParticles(ParticleTypes.CRIT, target.getX(), target.getBodyY(0.55), target.getZ(),
+                    8, 0.25, 0.35, 0.25, 0.12);
+            world.spawnParticles(ParticleTypes.DAMAGE_INDICATOR, target.getX(), target.getBodyY(0.55), target.getZ(),
+                    4, 0.22, 0.3, 0.22, 0.08);
+            world.playSound(null, target.getBlockPos(), SoundEvents.ENTITY_PLAYER_ATTACK_STRONG,
+                    SoundCategory.PLAYERS, 0.75f, 0.7f + player.getRandom().nextFloat() * 0.25f);
+            RAGE_NEXT_ATTACK.put(player.getUuid(), now + 10L);
+        }
+    }
+
+    private static LivingEntity findNearestRageTarget(ServerPlayerEntity player) {
+        LivingEntity nearest = null;
+        double nearestDistance = 24.0 * 24.0;
+        for (LivingEntity candidate : player.getWorld().getEntitiesByClass(
+                LivingEntity.class, player.getBoundingBox().expand(24.0),
+                entity -> isRageTarget(player, entity))) {
+            double distance = player.squaredDistanceTo(candidate);
+            if (distance < nearestDistance) {
+                nearestDistance = distance;
+                nearest = candidate;
+            }
+        }
+        return nearest;
+    }
+
+    private static boolean isRageTarget(ServerPlayerEntity player, LivingEntity candidate) {
+        if (candidate == player || !candidate.isAlive() || !candidate.isAttackable()) return false;
+        if (candidate instanceof PlayerEntity other && (other.isCreative() || other.isSpectator())) return false;
+        return true;
     }
 
     public static boolean isTimeDilated(MobEntity mob) {
@@ -257,27 +367,42 @@ public final class CyberwareManager {
         }
     }
 
+    public static void removePlayer(UUID uuid) {
+        ACTIVE.remove(uuid);
+        COOLDOWNS.remove(uuid);
+        STRESS.remove(uuid);
+        STRESS_TIER.remove(uuid);
+        OVERLOAD_UNTIL.remove(uuid);
+        RAGE_TARGETS.remove(uuid);
+        RAGE_NEXT_ATTACK.remove(uuid);
+    }
+
     private static void tickPlayer(ServerPlayerEntity player) {
         UUID uuid = player.getUuid();
         long now = player.getWorld().getTime();
 
-        if (isOverloaded(uuid, now)) {
-            if (player.age % 20 == 0) {
-                ServerWorld world = (ServerWorld) player.getWorld();
-                world.spawnParticles(ParticleTypes.SOUL, player.getX(), player.getY() + 1.0, player.getZ(),
-                        7, 0.35, 0.5, 0.35, 0.02);
-                sendVisual(player, 10, 7, 82);
-            }
+        Long rageEndsAt = OVERLOAD_UNTIL.get(uuid);
+        if (rageEndsAt != null && now < rageEndsAt) {
+            tickCyberpsychosisRage(player, now);
             if (player.age % 60 == 0) {
                 player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.ENTITY_WARDEN_HEARTBEAT,
                         SoundCategory.PLAYERS, 0.35f, 0.72f);
             }
             return;
         }
+        if (rageEndsAt != null) {
+            OVERLOAD_UNTIL.remove(uuid);
+            RAGE_TARGETS.remove(uuid);
+            RAGE_NEXT_ATTACK.remove(uuid);
+            player.setSprinting(false);
+            player.sendMessage(Text.translatable("message.cyberpunk.cyberpsychosis_recovered"), true);
+            sendVisual(player, 11, 18, 82);
+        }
 
         ActiveAbility ability = ACTIVE.get(uuid);
         if (ability != null && now >= ability.expiresAt()) {
             ACTIVE.remove(uuid);
+            if (ability.implantType() == SANDEVISTAN) broadcastSandevistanTrail(player, 0);
             ability = null;
             player.sendMessage(Text.translatable("message.cyberpunk.ability_ended"), true);
             sendVisual(player, 11, 8, 45);
@@ -382,6 +507,7 @@ public final class CyberwareManager {
     private static void tickSandevistan(ServerPlayerEntity player) {
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 8, 2, true, false, false));
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 8, 1, true, false, false));
+        if (player.age % 6 == 0) broadcastSandevistanTrail(player, 14);
 
         if (player.age % 2 == 0) {
             double trailX = player.getX() - player.getVelocity().x * 2.4;
