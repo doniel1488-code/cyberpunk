@@ -485,7 +485,7 @@ public final class CyberwareManager {
         int hits = 0;
         for (LivingEntity target : targets) {
             if (!player.canSee(target)) continue;
-            if (target.damage(player.getDamageSources().playerAttack(player), 5.0f)) {
+            if (target.damage(world, player.getDamageSources().playerAttack(player), 5.0f)) {
                 target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 12, 0, true, true, true));
                 world.spawnParticles(ParticleTypes.CRIT, target.getX(), target.getBodyY(0.55), target.getZ(),
                         7, 0.22, 0.32, 0.22, 0.12);
