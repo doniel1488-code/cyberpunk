@@ -8,7 +8,7 @@ import net.minecraft.item.equipment.EquipmentType;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.sound.SoundEvents;
-import net.minecraft.tag.TagKey;
+import net.minecraft.registry.tag.TagKey;
 
 import java.util.Map;
 
