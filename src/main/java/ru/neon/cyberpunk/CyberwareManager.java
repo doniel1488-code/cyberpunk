@@ -325,7 +325,7 @@ public final class CyberwareManager {
             ServerWorld world = (ServerWorld) wearer.getWorld();
             world.spawnParticles(ParticleTypes.ELECTRIC_SPARK, wearer.getX(), wearer.getY() + 0.9, wearer.getZ(),
                     6, 0.28, 0.42, 0.28, 0.025);
-            world.playSound(null, wearer.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE,
+            world.playSound(null, wearer.getBlockPos(), SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME,
                     SoundCategory.PLAYERS, 0.18f, 1.8f);
         }
     }
