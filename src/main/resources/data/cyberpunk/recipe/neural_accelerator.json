@@ -1,12 +1,24 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": ["RNR", "AEA", " R "],
+  "pattern": [
+    "APA",
+    "NEN",
+    " A "
+  ],
   "key": {
-    "R": { "item": "minecraft:redstone" },
-    "N": { "item": "minecraft:nether_star" },
-    "A": { "item": "minecraft:amethyst_shard" },
-    "E": { "item": "minecraft:echo_shard" }
+    "A": {
+      "item": "cyberpunk:cybernetic_alloy"
+    },
+    "P": {
+      "item": "cyberpunk:power_cell"
+    },
+    "N": {
+      "item": "cyberpunk:neural_processor"
+    },
+    "E": {
+      "item": "minecraft:echo_shard"
+    }
   },
   "result": {
     "id": "cyberpunk:neural_accelerator",

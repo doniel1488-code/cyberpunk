@@ -1,12 +1,24 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": ["ENE", "RBR", "ENE"],
+  "pattern": [
+    "ANA",
+    "PBP",
+    "ANA"
+  ],
   "key": {
-    "N": { "item": "minecraft:netherite_ingot" },
-    "E": { "item": "minecraft:echo_shard" },
-    "R": { "item": "minecraft:redstone_block" },
-    "B": { "item": "minecraft:beacon" }
+    "A": {
+      "item": "cyberpunk:cybernetic_alloy"
+    },
+    "N": {
+      "item": "cyberpunk:neural_processor"
+    },
+    "P": {
+      "item": "cyberpunk:power_cell"
+    },
+    "B": {
+      "item": "minecraft:beacon"
+    }
   },
   "result": {
     "id": "cyberpunk:sandevistan",

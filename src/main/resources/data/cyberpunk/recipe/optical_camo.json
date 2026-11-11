@@ -1,12 +1,27 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": ["GGG", "AEA", "R R"],
+  "pattern": [
+    "SPS",
+    "ANA",
+    "R R"
+  ],
   "key": {
-    "G": { "item": "minecraft:glass" },
-    "A": { "item": "minecraft:amethyst_shard" },
-    "E": { "item": "minecraft:ender_pearl" },
-    "R": { "item": "minecraft:redstone" }
+    "S": {
+      "item": "cyberpunk:synthetic_fiber"
+    },
+    "P": {
+      "item": "cyberpunk:power_cell"
+    },
+    "A": {
+      "item": "cyberpunk:cybernetic_alloy"
+    },
+    "N": {
+      "item": "cyberpunk:neural_processor"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    }
   },
   "result": {
     "id": "cyberpunk:optical_camo",
