@@ -35,10 +35,12 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          JAR="build/libs/cyberpunk-fabric-0.1.0-alpha.2.jar"
+          JAR="build/libs/cyberpunk-fabric-0.1.0-alpha.3.jar"
           test -f "$JAR"
           jar tf "$JAR" > /tmp/jar-contents.txt
           grep -q 'fabric.mod.json' /tmp/jar-contents.txt
+          grep -q 'CyberpunkVisualPayload.class' /tmp/jar-contents.txt
+          grep -q 'CyberpunkVisuals.class' /tmp/jar-contents.txt
           grep -q 'cyberpunk.mixins.json' /tmp/jar-contents.txt
           grep -q 'MobEntitySandevistanMixin.class' /tmp/jar-contents.txt
           grep -q 'assets/cyberpunk/lang/ru_ru.json' /tmp/jar-contents.txt
@@ -46,10 +48,26 @@ jobs:
           grep -q 'assets/cyberpunk/models/item/sandevistan.json' /tmp/jar-contents.txt
           grep -q 'data/cyberpunk/recipe/sandevistan.json' /tmp/jar-contents.txt
 
+      - name: Validate JSON resources and locale parity
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, zipfile
+          jar = 'build/libs/cyberpunk-fabric-0.1.0-alpha.3.jar'
+          with zipfile.ZipFile(jar) as archive:
+              for name in archive.namelist():
+                  if name.endswith('.json'):
+                      json.loads(archive.read(name))
+              ru = json.loads(archive.read('assets/cyberpunk/lang/ru_ru.json'))
+              en = json.loads(archive.read('assets/cyberpunk/lang/en_us.json'))
+              assert set(ru) == set(en), 'ru_ru/en_us keys differ'
+          print('JSON and locale checks passed.')
+          PY
+
       - name: Upload mod JAR
         uses: actions/upload-artifact@v4
         with:
-          name: cyberpunk-fabric-1.21.8-alpha.2
-          path: build/libs/cyberpunk-fabric-0.1.0-alpha.2.jar
+          name: cyberpunk-fabric-1.21.8-alpha.3
+          path: build/libs/cyberpunk-fabric-0.1.0-alpha.3.jar
           if-no-files-found: error
           retention-days: 30
