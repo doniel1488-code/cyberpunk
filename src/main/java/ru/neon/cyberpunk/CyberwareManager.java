@@ -15,7 +15,11 @@ import net.minecraft.sound.SoundEvents;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.text.Text;
+import net.minecraft.util.math.Box;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -40,6 +44,7 @@ public final class CyberwareManager {
     private static final Map<UUID, Long> OVERLOAD_UNTIL = new HashMap<>();
     private static final Map<UUID, Long> RAGE_NEXT_ATTACK = new HashMap<>();
     private static final Map<UUID, Long> GORILLA_HIT_READY = new HashMap<>();
+    private static final Map<UUID, Integer> RAGE_TARGETS = new HashMap<>();
 
     private CyberwareManager() {
     }
@@ -109,6 +114,72 @@ public final class CyberwareManager {
         player.sendMessage(Text.translatable("message.cyberpunk.implant_uninstalled"), true);
         player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.BLOCK_BEACON_DEACTIVATE,
                 SoundCategory.PLAYERS, 0.65f, 1.15f);
+    }
+
+    public static void handleScreenAction(ServerPlayerEntity player, CyberwareActionPayload payload) {
+        if (payload.action() == 0) {
+            sendCyberwareState(player);
+            return;
+        }
+        int type = payload.implantType();
+        if (payload.action() != 1 || type < ACCELERATOR || type > BLOOD_PUMP) {
+            sendCyberwareState(player);
+            return;
+        }
+
+        String tag = getInstallTag(type);
+        if (player.getCommandTags().contains(tag)) {
+            uninstall(player, type);
+        } else {
+            Item chip = getImplantItem(type);
+            boolean installed = false;
+            for (int slot = 0; slot < player.getInventory().size(); slot++) {
+                ItemStack stack = player.getInventory().getStack(slot);
+                if (stack.isOf(chip)) {
+                    stack.decrement(1);
+                    player.addCommandTag(tag);
+                    player.sendMessage(Text.translatable(
+                            "message.cyberpunk.implant_installed",
+                            chip.getName(),
+                            Text.translatable(getActivationKeyTranslation(type))
+                    ), true);
+                    player.getWorld().playSound(null, player.getBlockPos(),
+                            SoundEvents.BLOCK_BEACON_POWER_SELECT, SoundCategory.PLAYERS, 0.8f, 1.2f);
+                    installed = true;
+                    break;
+                }
+            }
+            if (!installed) {
+                player.sendMessage(Text.translatable("message.cyberpunk.no_implant_chip"), true);
+            }
+        }
+        sendCyberwareState(player);
+    }
+
+    private static Item getImplantItem(int type) {
+        return switch (type) {
+            case ACCELERATOR -> ModItems.NEURAL_ACCELERATOR;
+            case OPTICAL_CAMO -> ModItems.OPTICAL_CAMO;
+            case BERSERK -> ModItems.BERSERK_MODULE;
+            case SANDEVISTAN -> ModItems.SANDEVISTAN;
+            case MANTIS_ARMS -> ModItems.MANTIS_ARMS;
+            case GORILLA_ARMS -> ModItems.GORILLA_ARMS;
+            case KERENZIKOV -> ModItems.KERENZIKOV;
+            case SUBDERMAL_ARMOR -> ModItems.SUBDERMAL_ARMOR;
+            case BLOOD_PUMP -> ModItems.BLOOD_PUMP;
+            default -> throw new IllegalArgumentException("Unknown implant type: " + type);
+        };
+    }
+
+    private static void sendCyberwareState(ServerPlayerEntity player) {
+        int installedMask = 0;
+        for (int type = ACCELERATOR; type <= BLOOD_PUMP; type++) {
+            if (player.getCommandTags().contains(getInstallTag(type))) installedMask |= (1 << type);
+        }
+        long now = player.getWorld().getTime();
+        int psychosisTicks = (int) Math.max(0L, OVERLOAD_UNTIL.getOrDefault(player.getUuid(), 0L) - now);
+        int neuralLoad = Math.round(STRESS.getOrDefault(player.getUuid(), 0.0f));
+        ServerPlayNetworking.send(player, new CyberwareStatePayload(installedMask, neuralLoad, psychosisTicks));
     }
 
     public static void sendStatus(ServerPlayerEntity player) {
@@ -436,6 +507,7 @@ public final class CyberwareManager {
         STRESS.put(uuid, 30.0f);
         STRESS_TIER.put(uuid, 0);
         RAGE_NEXT_ATTACK.put(uuid, now + 8L);
+        RAGE_TARGETS.remove(uuid);
 
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 28, 0, false, false, true));
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 55, 1, false, false, true));
@@ -452,7 +524,7 @@ public final class CyberwareManager {
                 55, 0.75, 0.9, 0.75, 0.06);
         world.spawnParticles(ParticleTypes.FLAME, player.getX(), player.getY() + 0.9, player.getZ(),
                 22, 0.5, 0.55, 0.5, 0.035);
-        sendVisual(player, 10, 70, 175);
+        sendVisual(player, 10, 300, 185);
     }
 
     private static void tickCyberpsychosisRage(ServerPlayerEntity player, long now) {
@@ -461,8 +533,9 @@ public final class CyberwareManager {
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 8, 1, true, false, false));
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 8, 1, true, false, false));
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 8, 0, true, false, false));
-        if (player.age % 4 == 0) {
-            ServerWorld world = (ServerWorld) player.getWorld();
+
+        ServerWorld world = (ServerWorld) player.getWorld();
+        if (player.age % 3 == 0) {
             world.spawnParticles(ParticleTypes.FLAME, player.getX(), player.getY() + 0.9, player.getZ(),
                     4, 0.35, 0.5, 0.35, 0.025);
             world.spawnParticles(ParticleTypes.DAMAGE_INDICATOR, player.getX(), player.getY() + 1.0, player.getZ(),
@@ -471,37 +544,127 @@ public final class CyberwareManager {
                     2, 0.25, 0.35, 0.25, 0.02);
         }
 
-        // Preserve camera and movement input: rage strikes visible targets around the player.
         UUID uuid = player.getUuid();
+        LivingEntity target = selectRageTarget(player);
+        if (target == null) {
+            player.setSprinting(false);
+            return;
+        }
+
+        // A persistent target mark makes the current victim obvious through walls.
+        target.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 10, 0, true, false, false));
+        if (player.age % 4 == 0) {
+            world.spawnParticles(ParticleTypes.ANGRY_VILLAGER,
+                    target.getX(), target.getBodyY(1.08), target.getZ(), 2, 0.22, 0.16, 0.22, 0.0);
+            world.spawnParticles(ParticleTypes.ELECTRIC_SPARK,
+                    target.getX(), target.getBodyY(0.55), target.getZ(), 4, 0.3, 0.35, 0.3, 0.04);
+        }
+
+        double dx = target.getX() - player.getX();
+        double dz = target.getZ() - player.getZ();
+        double distanceSquared = dx * dx + dz * dz;
+        if (distanceSquared > 2.8 * 2.8) {
+            Vec3d towardTarget = new Vec3d(dx, 0.0, dz).normalize();
+            Vec3d steering = findPursuitDirection(player, towardTarget);
+            if (steering.lengthSquared() > 0.001) {
+                float yaw = (float) (MathHelper.atan2(-steering.x, steering.z) * 57.295776f);
+                player.setYaw(yaw);
+                player.setHeadYaw(yaw);
+                player.setSprinting(true);
+
+                Vec3d velocity = player.getVelocity();
+                double speed = player.isTouchingWater() ? 0.22 : 0.38;
+                player.setVelocity(steering.x * speed, velocity.y, steering.z * speed);
+                player.velocityModified = true;
+
+                if (player.isOnGround() && target.getY() > player.getY() + 0.9
+                        && world.isSpaceEmpty(player, player.getBoundingBox().offset(0.0, 1.0, 0.0))) {
+                    player.jump();
+                }
+            } else {
+                // If a wall blocks every horizontal route, try to vault a low obstacle.
+                player.setSprinting(false);
+                if (player.isOnGround()
+                        && world.isSpaceEmpty(player, player.getBoundingBox().offset(0.0, 1.0, 0.0))) {
+                    player.jump();
+                }
+            }
+            if (player.age % 3 == 0) {
+                world.spawnParticles(ParticleTypes.ELECTRIC_SPARK,
+                        player.getX() - player.getVelocity().x * 1.2,
+                        player.getY() + 0.75,
+                        player.getZ() - player.getVelocity().z * 1.2,
+                        5, 0.12, 0.25, 0.12, 0.025);
+            }
+            return;
+        }
+
+        player.setSprinting(false);
         if (now < RAGE_NEXT_ATTACK.getOrDefault(uuid, 0L)) return;
-        ServerWorld world = (ServerWorld) player.getWorld();
-        var targets = world.getEntitiesByClass(
+        if (target.damage(world, player.getDamageSources().playerAttack(player), 7.0f)) {
+            target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 16, 0, true, true, true));
+            target.takeKnockback(0.65, player.getX() - target.getX(), player.getZ() - target.getZ());
+            world.spawnParticles(ParticleTypes.CRIT, target.getX(), target.getBodyY(0.55), target.getZ(),
+                    9, 0.25, 0.35, 0.25, 0.12);
+            world.spawnParticles(ParticleTypes.DAMAGE_INDICATOR,
+                    target.getX(), target.getBodyY(0.55), target.getZ(),
+                    5, 0.2, 0.3, 0.2, 0.08);
+        }
+        player.swingHand(net.minecraft.util.Hand.MAIN_HAND);
+        world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_PLAYER_ATTACK_STRONG,
+                SoundCategory.PLAYERS, 0.9f, 0.62f + player.getRandom().nextFloat() * 0.25f);
+        sendVisual(player, 10, 300, 185);
+        RAGE_NEXT_ATTACK.put(uuid, now + 12L);
+    }
+
+    private static LivingEntity selectRageTarget(ServerPlayerEntity player) {
+        UUID uuid = player.getUuid();
+        int currentId = RAGE_TARGETS.getOrDefault(uuid, -1);
+        var currentEntity = player.getWorld().getEntityById(currentId);
+        if (currentEntity instanceof LivingEntity current && isValidRageTarget(player, current)) {
+            return current;
+        }
+
+        LivingEntity next = player.getWorld().getEntitiesByClass(
                 LivingEntity.class,
-                player.getBoundingBox().expand(3.5, 1.5, 3.5),
-                entity -> entity != player && entity.isAlive() && entity.isAttackable()
-                        && (!(entity instanceof PlayerEntity other)
-                        || (!other.isCreative() && !other.isSpectator()))
-        );
-        int hits = 0;
-        for (LivingEntity target : targets) {
-            if (!player.canSee(target)) continue;
-            if (target.damage(world, player.getDamageSources().playerAttack(player), 5.0f)) {
-                target.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 12, 0, true, true, true));
-                world.spawnParticles(ParticleTypes.CRIT, target.getX(), target.getBodyY(0.55), target.getZ(),
-                        7, 0.22, 0.32, 0.22, 0.12);
-                world.spawnParticles(ParticleTypes.DAMAGE_INDICATOR,
-                        target.getX(), target.getBodyY(0.55), target.getZ(),
-                        4, 0.18, 0.25, 0.18, 0.08);
-                hits++;
+                player.getBoundingBox().expand(32.0, 12.0, 32.0),
+                entity -> isValidRageTarget(player, entity)
+        ).stream().min(java.util.Comparator.comparingDouble(player::squaredDistanceTo)).orElse(null);
+
+        if (next != null) {
+            RAGE_TARGETS.put(uuid, next.getId());
+            player.sendMessage(Text.translatable("message.cyberpunk.psychosis_target_locked",
+                    next.getDisplayName()), true);
+        } else {
+            RAGE_TARGETS.remove(uuid);
+        }
+        return next;
+    }
+
+    private static boolean isValidRageTarget(ServerPlayerEntity player, LivingEntity entity) {
+        if (entity == player || !entity.isAlive() || !entity.isAttackable()
+                || !player.getWorld().getRegistryKey().equals(entity.getWorld().getRegistryKey())
+                || player.squaredDistanceTo(entity) > 32.0 * 32.0) {
+            return false;
+        }
+        return !(entity instanceof PlayerEntity other) || (!other.isCreative() && !other.isSpectator());
+    }
+
+    private static Vec3d findPursuitDirection(ServerPlayerEntity player, Vec3d desired) {
+        float[] offsets = {0.0f, 28.0f, -28.0f, 55.0f, -55.0f, 88.0f, -88.0f, 125.0f, -125.0f, 180.0f};
+        Vec3d best = Vec3d.ZERO;
+        double bestScore = -Double.MAX_VALUE;
+        for (float degrees : offsets) {
+            Vec3d candidate = desired.rotateY((float) Math.toRadians(degrees));
+            Box nextSpace = player.getBoundingBox().offset(candidate.x * 0.72, 0.0, candidate.z * 0.72);
+            if (!player.getWorld().isSpaceEmpty(player, nextSpace)) continue;
+            double score = candidate.dotProduct(desired) - Math.abs(degrees) * 0.0008;
+            if (score > bestScore) {
+                bestScore = score;
+                best = candidate;
             }
         }
-        if (hits > 0) {
-            player.swingHand(net.minecraft.util.Hand.MAIN_HAND);
-            world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_PLAYER_ATTACK_STRONG,
-                    SoundCategory.PLAYERS, 0.8f, 0.68f + player.getRandom().nextFloat() * 0.25f);
-            sendVisual(player, 10, 5, 72);
-        }
-        RAGE_NEXT_ATTACK.put(uuid, now + 10L);
+        return best;
     }
 
     public static boolean isTimeDilated(MobEntity mob) {
@@ -542,6 +705,7 @@ public final class CyberwareManager {
         STRESS_TIER.remove(uuid);
         OVERLOAD_UNTIL.remove(uuid);
         RAGE_NEXT_ATTACK.remove(uuid);
+        RAGE_TARGETS.remove(uuid);
         GORILLA_HIT_READY.remove(uuid);
     }
 
@@ -576,6 +740,8 @@ public final class CyberwareManager {
         if (rageEndsAt != null) {
             OVERLOAD_UNTIL.remove(uuid);
             RAGE_NEXT_ATTACK.remove(uuid);
+            RAGE_TARGETS.remove(uuid);
+            player.setSprinting(false);
             player.sendMessage(Text.translatable("message.cyberpunk.cyberpsychosis_recovered"), true);
             sendVisual(player, 11, 18, 82);
         }

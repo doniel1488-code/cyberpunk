@@ -88,6 +88,28 @@ public final class CyberpunkVisuals {
                 context.fill(2, y, Math.min(width / 2, 2 + length), y + 1, glitchColor);
                 context.fill(Math.max(width / 2, width - 2 - length), y, width - 2, y + 1, glitchColor);
             }
+
+            if (effectId == 10) {
+                // Short, uneven scanline tears and signal flashes: the center remains readable.
+                int tearAlpha = Math.min(38, edgeAlpha + 12);
+                int tearColor = (tearAlpha << 24) | 0x00FF1838;
+                for (int i = 0; i < 7; i++) {
+                    if (((pulsePhase + i * 3) % 5) < 2) {
+                        int y = Math.floorMod(pulsePhase * 17 + i * 47, Math.max(1, height - 2));
+                        int shift = Math.floorMod(pulsePhase * 11 + i * 29, Math.max(1, width / 7));
+                        int tearWidth = Math.max(24, width / 4);
+                        int start = Math.floorMod(width / 3 + shift, Math.max(1, width - tearWidth));
+                        context.fill(start, y, start + tearWidth, y + 2, tearColor);
+                    }
+                }
+                if (pulsePhase % 13 < 2) {
+                    context.fill(0, 0, width, height, 0x0DFF102E);
+                }
+                int jitter = pulsePhase % 4 == 0 ? 3 : pulsePhase % 4 == 1 ? -2 : 0;
+                context.drawCenteredTextWithShadow(client.textRenderer,
+                        Text.literal("!!! TARGET LOCK // NEURAL FAILURE !!!"),
+                        width / 2 + jitter, height / 2 - 34, 0xFFFF5268);
+            }
         }
 
         if (ticksLeft >= Math.max(4, initialTicks / 3)) {

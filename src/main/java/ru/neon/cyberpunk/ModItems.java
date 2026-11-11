@@ -1,14 +1,16 @@
 package ru.neon.cyberpunk;
 
-import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
+import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroups;
+import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemStack;
 import net.minecraft.item.equipment.EquipmentType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
+import net.minecraft.text.Text;
 
 public final class ModItems {
     public static final Item NEURAL_ACCELERATOR = registerImplant("neural_accelerator", 0);
@@ -57,25 +59,35 @@ public final class ModItems {
     }
 
     public static void initialize() {
-        ItemGroupEvents.modifyEntriesEvent(ItemGroups.COMBAT).register(entries -> {
-            entries.add(NEURAL_ACCELERATOR);
-            entries.add(OPTICAL_CAMO);
-            entries.add(BERSERK_MODULE);
-            entries.add(SANDEVISTAN);
-            entries.add(MANTIS_ARMS);
-            entries.add(GORILLA_ARMS);
-            entries.add(KERENZIKOV);
-            entries.add(SUBDERMAL_ARMOR);
-            entries.add(BLOOD_PUMP);
-            entries.add(CYBERNETIC_ALLOY);
-            entries.add(SERVO_MOTOR);
-            entries.add(NEURAL_PROCESSOR);
-            entries.add(SYNTHETIC_FIBER);
-            entries.add(POWER_CELL);
-            entries.add(CYBERWARE_HELMET);
-            entries.add(CYBERWARE_CHESTPLATE);
-            entries.add(CYBERWARE_LEGGINGS);
-            entries.add(CYBERWARE_BOOTS);
-        });
+        RegistryKey<ItemGroup> cyberwareKey =
+                RegistryKey.of(RegistryKeys.ITEM_GROUP, CyberpunkMod.id("cyberware"));
+        ItemGroup cyberwareGroup = FabricItemGroup.builder()
+                .displayName(Text.translatable("itemGroup.cyberpunk.cyberware"))
+                .icon(() -> new ItemStack(SANDEVISTAN))
+                .entries((context, entries) -> {
+                    // Coreware implants first, then fabrication parts, then the complete armor set.
+                    entries.add(NEURAL_ACCELERATOR);
+                    entries.add(OPTICAL_CAMO);
+                    entries.add(BERSERK_MODULE);
+                    entries.add(SANDEVISTAN);
+                    entries.add(MANTIS_ARMS);
+                    entries.add(GORILLA_ARMS);
+                    entries.add(KERENZIKOV);
+                    entries.add(SUBDERMAL_ARMOR);
+                    entries.add(BLOOD_PUMP);
+
+                    entries.add(CYBERNETIC_ALLOY);
+                    entries.add(SERVO_MOTOR);
+                    entries.add(NEURAL_PROCESSOR);
+                    entries.add(SYNTHETIC_FIBER);
+                    entries.add(POWER_CELL);
+
+                    entries.add(CYBERWARE_HELMET);
+                    entries.add(CYBERWARE_CHESTPLATE);
+                    entries.add(CYBERWARE_LEGGINGS);
+                    entries.add(CYBERWARE_BOOTS);
+                })
+                .build();
+        Registry.register(Registries.ITEM_GROUP, cyberwareKey, cyberwareGroup);
     }
 }

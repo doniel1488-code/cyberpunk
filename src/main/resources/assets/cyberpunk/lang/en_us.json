@@ -74,5 +74,18 @@
   "description.cyberpunk.kerenzikov": "Dashes in the look direction and boosts reflexes.",
   "description.cyberpunk.subdermal_armor": "Passively grants Resistance I while installed.",
   "description.cyberpunk.blood_pump": "Restores health and grants regeneration and absorption.",
-  "message.cyberpunk.unknown_implant": "Unknown implant: %s. Use /cyberware to list implants."
+  "message.cyberpunk.unknown_implant": "Unknown implant: %s. Use /cyberware to list implants.",
+  "itemGroup.cyberpunk.cyberware": "Cyberpunk — Cyberware",
+  "gui.cyberpunk.tab": "CYBERWARE",
+  "gui.cyberpunk.title": "Cyberware Interface",
+  "gui.cyberpunk.subtitle": "IMPLANT MANAGEMENT // NEURAL LINK",
+  "gui.cyberpunk.load": "Neural load: %s%%",
+  "gui.cyberpunk.sync": "SYNCING",
+  "gui.cyberpunk.overload": "PSYCHOSIS: %s sec.",
+  "gui.cyberpunk.close": "CLOSE",
+  "gui.cyberpunk.install": "INSTALL",
+  "gui.cyberpunk.remove": "REMOVE",
+  "gui.cyberpunk.footer": "Choose an action on a card. Keep the required implant chip in your inventory to install it.",
+  "message.cyberpunk.no_implant_chip": "You do not have this implant chip in your inventory.",
+  "message.cyberpunk.psychosis_target_locked": "TARGET LOCKED // %s"
 }

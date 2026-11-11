@@ -35,6 +35,8 @@ public final class CyberpunkClient implements ClientModInitializer {
                 context.client().execute(() -> CyberpunkVisuals.trigger(payload)));
         ClientPlayNetworking.registerGlobalReceiver(SandevistanTrailPayload.ID, (payload, context) ->
                 context.client().execute(() -> SandevistanTrail.accept(payload)));
+        ClientPlayNetworking.registerGlobalReceiver(CyberwareStatePayload.ID, (payload, context) ->
+                context.client().execute(() -> CyberwareScreen.acceptState(payload)));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             if (client.player == null || client.world == null) return;

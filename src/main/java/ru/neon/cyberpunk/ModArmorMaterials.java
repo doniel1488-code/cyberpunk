@@ -14,7 +14,8 @@ import java.util.Map;
 
 public final class ModArmorMaterials {
     public static final int BASE_DURABILITY = 38;
-    public static final RegistryKey<EquipmentAsset> ASSET_ID = EquipmentAssetKeys.register("cyberware");
+    public static final RegistryKey<EquipmentAsset> ASSET_ID =
+            RegistryKey.of(EquipmentAssetKeys.REGISTRY_KEY, CyberpunkMod.id("cyberware"));
     public static final TagKey<Item> REPAIR_INGREDIENT =
             TagKey.of(RegistryKeys.ITEM, CyberpunkMod.id("repairs_cyberware_armor"));
 

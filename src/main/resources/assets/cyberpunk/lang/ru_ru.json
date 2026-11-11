@@ -74,5 +74,18 @@
   "description.cyberpunk.kerenzikov": "Делает рывок по направлению взгляда и ускоряет рефлексы.",
   "description.cyberpunk.subdermal_armor": "Пассивно даёт Resistance I, пока имплант установлен.",
   "description.cyberpunk.blood_pump": "Восстанавливает здоровье, даёт регенерацию и поглощение.",
-  "message.cyberpunk.unknown_implant": "Неизвестный имплант: %s. Список: /cyberware"
+  "message.cyberpunk.unknown_implant": "Неизвестный имплант: %s. Список: /cyberware",
+  "itemGroup.cyberpunk.cyberware": "Cyberpunk — кибернетика",
+  "gui.cyberpunk.tab": "КИБЕРНЕТИКА",
+  "gui.cyberpunk.title": "Кибернетический интерфейс",
+  "gui.cyberpunk.subtitle": "УПРАВЛЕНИЕ ИМПЛАНТАМИ // НЕЙРОСЕТЬ",
+  "gui.cyberpunk.load": "Нейронагрузка: %s%%",
+  "gui.cyberpunk.sync": "СИНХРОНИЗАЦИЯ",
+  "gui.cyberpunk.overload": "ПСИХОЗ: %s сек.",
+  "gui.cyberpunk.close": "ЗАКРЫТЬ",
+  "gui.cyberpunk.install": "УСТАНОВИТЬ",
+  "gui.cyberpunk.remove": "СНЯТЬ",
+  "gui.cyberpunk.footer": "Нажми действие на карточке. Для установки чип должен лежать в инвентаре.",
+  "message.cyberpunk.no_implant_chip": "В инвентаре нет чипа этого импланта.",
+  "message.cyberpunk.psychosis_target_locked": "ЦЕЛЬ ЗАФИКСИРОВАНА // %s"
 }

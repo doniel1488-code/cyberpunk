@@ -35,7 +35,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          JAR="build/libs/cyberpunk-fabric-0.1.0-alpha.7.jar"
+          JAR="build/libs/cyberpunk-fabric-0.1.0-alpha.8.jar"
           test -f "$JAR"
           jar tf "$JAR" > /tmp/jar-contents.txt
           grep -q 'fabric.mod.json' /tmp/jar-contents.txt
@@ -75,7 +75,7 @@ jobs:
         run: |
           python - <<'PY'
           import json, zipfile
-          jar = 'build/libs/cyberpunk-fabric-0.1.0-alpha.7.jar'
+          jar = 'build/libs/cyberpunk-fabric-0.1.0-alpha.8.jar'
           with zipfile.ZipFile(jar) as archive:
               for name in archive.namelist():
                   if name.endswith('.json'):
@@ -89,7 +89,7 @@ jobs:
       - name: Upload mod JAR
         uses: actions/upload-artifact@v4
         with:
-          name: cyberpunk-fabric-1.21.8-alpha.7
-          path: build/libs/cyberpunk-fabric-0.1.0-alpha.7.jar
+          name: cyberpunk-fabric-1.21.8-alpha.8
+          path: build/libs/cyberpunk-fabric-0.1.0-alpha.8.jar
           if-no-files-found: error
           retention-days: 30
