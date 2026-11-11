@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "cyberpunk",
+  "version": "${version}",
+  "name": "Cyberpunk",
+  "description": "An independent cyberpunk-inspired cyberware mod for Fabric.",
+  "authors": ["doniel1488-code"],
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["ru.neon.cyberpunk.CyberpunkMod"],
+    "client": ["ru.neon.cyberpunk.CyberpunkClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "~1.21.8",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}
