@@ -12,6 +12,7 @@ public final class CyberpunkClient implements ClientModInitializer {
     private static KeyBinding acceleratorKey;
     private static KeyBinding opticalCamoKey;
     private static KeyBinding berserkKey;
+    private static KeyBinding sandevistanKey;
 
     @Override
     public void onInitializeClient() {
@@ -24,6 +25,9 @@ public final class CyberpunkClient implements ClientModInitializer {
         berserkKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
                 "key.cyberpunk.berserk", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_X,
                 "category.cyberpunk.implants"));
+        sandevistanKey = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "key.cyberpunk.sandevistan", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_B,
+                "category.cyberpunk.implants"));
 
         ClientTickEvents.END_CLIENT_TICK.register(client -> {
             while (acceleratorKey.wasPressed()) {
@@ -34,6 +38,9 @@ public final class CyberpunkClient implements ClientModInitializer {
             }
             while (berserkKey.wasPressed()) {
                 ClientPlayNetworking.send(new ActivateImplantPayload(2));
+            }
+            while (sandevistanKey.wasPressed()) {
+                ClientPlayNetworking.send(new ActivateImplantPayload(3));
             }
         });
     }
