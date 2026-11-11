@@ -16,5 +16,22 @@
   "message.cyberpunk.activated": "Cyberware activated.",
   "message.cyberpunk.sandevistan_activated": "SANDEVISTAN ONLINE — TIME DILATED.",
   "message.cyberpunk.ability_ended": "Implant effect ended.",
-  "message.cyberpunk.cyberpsychosis": "CRITICAL NEURAL LOAD — CYBERPSYCHOSIS!"
+  "message.cyberpunk.cyberpsychosis": "CRITICAL NEURAL LOAD — CYBERPSYCHOSIS!",
+  "message.cyberpunk.accelerator_activated": "NEURAL ACCELERATOR // BURST ENGAGED",
+  "message.cyberpunk.camo_activated": "OPTICAL CAMO // CLOAK ACTIVE",
+  "message.cyberpunk.berserk_activated": "BERSERK // COMBAT ROUTINE ENGAGED",
+  "message.cyberpunk.mantis_activated": "MANTIS BLADES // DEPLOYED",
+  "message.cyberpunk.cyberpsychosis_locked": "NEURAL SYSTEM IN FAILSAFE. CYBERWARE LOCKED.",
+  "message.cyberpunk.neural_load_warning": "NEURAL LOAD: %s%% // CAUTION",
+  "message.cyberpunk.neural_load_critical": "CRITICAL NEURAL LOAD // REDUCE CYBERWARE USE",
+  "message.cyberpunk.neural_load_stabilized": "NEURAL LOAD STABILIZED",
+  "visual.cyberpunk.accelerator": "NEURAL ACCELERATOR // BURST",
+  "visual.cyberpunk.camo": "OPTICAL CAMOUFLAGE ACTIVE",
+  "visual.cyberpunk.berserk": "COMBAT MODE",
+  "visual.cyberpunk.sandevistan": "SANDEVISTAN // TIME DILATION",
+  "visual.cyberpunk.mantis": "MANTIS BLADES DEPLOYED",
+  "visual.cyberpunk.warning": "NEURAL LOAD ELEVATED",
+  "visual.cyberpunk.critical": "CRITICAL NEURAL LOAD",
+  "visual.cyberpunk.psychosis": "CYBERPSYCHOSIS // CONTROL LOST",
+  "visual.cyberpunk.system": "CYBERWARE SYSTEM"
 }
