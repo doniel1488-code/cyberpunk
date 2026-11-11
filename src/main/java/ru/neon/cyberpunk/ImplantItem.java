@@ -7,8 +7,8 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.text.Text;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.world.World;
 
 public final class ImplantItem extends Item {
@@ -20,17 +20,17 @@ public final class ImplantItem extends Item {
     }
 
     @Override
-    public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
+    public ActionResult use(World world, PlayerEntity user, Hand hand) {
         ItemStack stack = user.getStackInHand(hand);
         String commandTag = CyberwareManager.getInstallTag(implantType);
 
         if (world.isClient) {
-            return TypedActionResult.pass(stack);
+            return ActionResult.PASS;
         }
 
         if (user.getCommandTags().contains(commandTag)) {
             user.sendMessage(Text.translatable("message.cyberpunk.implant_already_installed"), true);
-            return TypedActionResult.fail(stack);
+            return ActionResult.FAIL;
         }
 
         user.addCommandTag(commandTag);
@@ -38,6 +38,6 @@ public final class ImplantItem extends Item {
         user.sendMessage(Text.translatable("message.cyberpunk.implant_installed", getName()), true);
         world.playSound(null, user.getBlockPos(), SoundEvents.BLOCK_BEACON_POWER_SELECT,
                 SoundCategory.PLAYERS, 0.8f, 1.2f);
-        return TypedActionResult.success(stack, false);
+        return ActionResult.SUCCESS_SERVER;
     }
 }
