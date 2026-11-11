@@ -31,22 +31,25 @@ jobs:
       - name: Build and remap
         run: gradle --no-daemon clean build
 
-      - name: Verify expected JAR
+      - name: Verify expected JAR and Sandevistan resources
         shell: bash
         run: |
           set -euo pipefail
-          JAR="build/libs/cyberpunk-fabric-0.1.0-alpha.1.jar"
+          JAR="build/libs/cyberpunk-fabric-0.1.0-alpha.2.jar"
           test -f "$JAR"
           jar tf "$JAR" > /tmp/jar-contents.txt
           grep -q 'fabric.mod.json' /tmp/jar-contents.txt
+          grep -q 'cyberpunk.mixins.json' /tmp/jar-contents.txt
+          grep -q 'MobEntitySandevistanMixin.class' /tmp/jar-contents.txt
           grep -q 'assets/cyberpunk/lang/ru_ru.json' /tmp/jar-contents.txt
-          grep -q 'assets/cyberpunk/textures/item/neural_accelerator.png' /tmp/jar-contents.txt
-          grep -q 'data/cyberpunk/recipe/neural_accelerator.json' /tmp/jar-contents.txt
+          grep -q 'assets/cyberpunk/textures/item/sandevistan.png' /tmp/jar-contents.txt
+          grep -q 'assets/cyberpunk/models/item/sandevistan.json' /tmp/jar-contents.txt
+          grep -q 'data/cyberpunk/recipe/sandevistan.json' /tmp/jar-contents.txt
 
       - name: Upload mod JAR
         uses: actions/upload-artifact@v4
         with:
-          name: cyberpunk-fabric-1.21.8
-          path: build/libs/cyberpunk-fabric-0.1.0-alpha.1.jar
+          name: cyberpunk-fabric-1.21.8-alpha.2
+          path: build/libs/cyberpunk-fabric-0.1.0-alpha.2.jar
           if-no-files-found: error
           retention-days: 30
