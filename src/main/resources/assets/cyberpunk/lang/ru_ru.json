@@ -2,9 +2,11 @@
   "item.cyberpunk.neural_accelerator": "Нейроускоритель",
   "item.cyberpunk.optical_camo": "Оптический камуфляж",
   "item.cyberpunk.berserk_module": "Модуль «Берсерк»",
+  "item.cyberpunk.sandevistan": "Сандевистан «Апогей»",
   "key.cyberpunk.neural_accelerator": "Активировать нейроускоритель",
   "key.cyberpunk.optical_camo": "Активировать оптический камуфляж",
   "key.cyberpunk.berserk": "Активировать «Берсерк»",
+  "key.cyberpunk.sandevistan": "Активировать Сандевистан",
   "category.cyberpunk.implants": "Cyberpunk: импланты",
   "message.cyberpunk.implant_installed": "Имплант установлен: %s",
   "message.cyberpunk.implant_already_installed": "Этот имплант уже установлен.",
@@ -12,6 +14,7 @@
   "message.cyberpunk.cooldown": "Перезарядка: %s сек.",
   "message.cyberpunk.already_active": "Другая киберсистема уже активна.",
   "message.cyberpunk.activated": "Киберсистема активирована.",
+  "message.cyberpunk.sandevistan_activated": "САНДЕВИСТАН АКТИВИРОВАН — ВРЕМЯ ЗАМЕДЛЕНО.",
   "message.cyberpunk.ability_ended": "Действие импланта завершилось.",
   "message.cyberpunk.cyberpsychosis": "КРИТИЧЕСКАЯ НАГРУЗКА НЕЙРОСЕТИ — КИБЕРПСИХОЗ!"
 }
