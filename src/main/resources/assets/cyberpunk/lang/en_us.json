@@ -64,5 +64,14 @@
   "item.cyberpunk.cyberware_helmet": "Cyberware Helmet",
   "item.cyberpunk.cyberware_chestplate": "Cyberware Chestplate",
   "item.cyberpunk.cyberware_leggings": "Cyberware Leggings",
-  "item.cyberpunk.cyberware_boots": "Cyberware Boots"
+  "item.cyberpunk.cyberware_boots": "Cyberware Boots",
+  "description.cyberpunk.neural_accelerator": "Speeds up the player and slows nearby ordinary mobs.",
+  "description.cyberpunk.optical_camo": "Grants invisibility and a small speed boost.",
+  "description.cyberpunk.berserk": "Boosts melee damage, defense and fire resistance.",
+  "description.cyberpunk.sandevistan": "Speeds up the player, slows mobs and creates afterimages.",
+  "description.cyberpunk.mantis_arms": "Strengthens melee hits and poisons targets.",
+  "description.cyberpunk.gorilla_arms": "Strengthens melee hits and heavily knocks targets back.",
+  "description.cyberpunk.kerenzikov": "Dashes in the look direction and boosts reflexes.",
+  "description.cyberpunk.subdermal_armor": "Passively grants Resistance I while installed.",
+  "description.cyberpunk.blood_pump": "Restores health and grants regeneration and absorption."
 }

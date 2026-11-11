@@ -64,5 +64,14 @@
   "item.cyberpunk.cyberware_helmet": "Кибершлем",
   "item.cyberpunk.cyberware_chestplate": "Кибернагрудник",
   "item.cyberpunk.cyberware_leggings": "Киберпоножи",
-  "item.cyberpunk.cyberware_boots": "Киберботинки"
+  "item.cyberpunk.cyberware_boots": "Киберботинки",
+  "description.cyberpunk.neural_accelerator": "Ускоряет игрока и замедляет обычных мобов рядом.",
+  "description.cyberpunk.optical_camo": "Даёт невидимость и небольшое ускорение.",
+  "description.cyberpunk.berserk": "Усиливает ближний бой, защиту и сопротивление огню.",
+  "description.cyberpunk.sandevistan": "Ускоряет игрока, замедляет мобов и создаёт послеобразы.",
+  "description.cyberpunk.mantis_arms": "Усиливает удары; попавшая цель получает отравление.",
+  "description.cyberpunk.gorilla_arms": "Усиливает удары и сильно отбрасывает цель.",
+  "description.cyberpunk.kerenzikov": "Делает рывок по направлению взгляда и ускоряет рефлексы.",
+  "description.cyberpunk.subdermal_armor": "Пассивно даёт Resistance I, пока имплант установлен.",
+  "description.cyberpunk.blood_pump": "Восстанавливает здоровье, даёт регенерацию и поглощение."
 }

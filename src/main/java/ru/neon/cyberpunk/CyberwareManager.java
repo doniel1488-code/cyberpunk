@@ -119,6 +119,19 @@ public final class CyberwareManager {
                     .append(Text.literal(" | "))
                     .append(Text.translatable(getActivationKeyTranslation(type)));
             player.sendMessage(line, false);
+            String descriptionKey = switch (type) {
+                case ACCELERATOR -> "description.cyberpunk.neural_accelerator";
+                case OPTICAL_CAMO -> "description.cyberpunk.optical_camo";
+                case BERSERK -> "description.cyberpunk.berserk";
+                case SANDEVISTAN -> "description.cyberpunk.sandevistan";
+                case MANTIS_ARMS -> "description.cyberpunk.mantis_arms";
+                case GORILLA_ARMS -> "description.cyberpunk.gorilla_arms";
+                case KERENZIKOV -> "description.cyberpunk.kerenzikov";
+                case SUBDERMAL_ARMOR -> "description.cyberpunk.subdermal_armor";
+                case BLOOD_PUMP -> "description.cyberpunk.blood_pump";
+                default -> "message.cyberpunk.activated";
+            };
+            player.sendMessage(Text.literal("  ").append(Text.translatable(descriptionKey)), false);
         }
     }
 
