@@ -2,9 +2,11 @@
   "item.cyberpunk.neural_accelerator": "Neural Accelerator",
   "item.cyberpunk.optical_camo": "Optical Camo",
   "item.cyberpunk.berserk_module": "Berserk Module",
+  "item.cyberpunk.sandevistan": "Sandevistan \"Apogee\"",
   "key.cyberpunk.neural_accelerator": "Activate Neural Accelerator",
   "key.cyberpunk.optical_camo": "Activate Optical Camo",
   "key.cyberpunk.berserk": "Activate Berserk",
+  "key.cyberpunk.sandevistan": "Activate Sandevistan",
   "category.cyberpunk.implants": "Cyberpunk: Implants",
   "message.cyberpunk.implant_installed": "Implant installed: %s",
   "message.cyberpunk.implant_already_installed": "This implant is already installed.",
@@ -12,6 +14,7 @@
   "message.cyberpunk.cooldown": "Cooldown: %s s",
   "message.cyberpunk.already_active": "Another cyberware ability is already active.",
   "message.cyberpunk.activated": "Cyberware activated.",
+  "message.cyberpunk.sandevistan_activated": "SANDEVISTAN ONLINE — TIME DILATED.",
   "message.cyberpunk.ability_ended": "Implant effect ended.",
   "message.cyberpunk.cyberpsychosis": "CRITICAL NEURAL LOAD — CYBERPSYCHOSIS!"
 }
