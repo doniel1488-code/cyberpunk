@@ -86,9 +86,12 @@ public final class CyberwareManager {
             default -> { return; }
         }
 
+        addStress(player, activationStress(implantType));
+        if (isOverloaded(uuid, now)) {
+            return;
+        }
         ACTIVE.put(uuid, new ActiveAbility(implantType, now + duration));
         playerCooldowns.put(implantType, now + cooldown);
-        addStress(player, activationStress(implantType));
         activationBurst(player, implantType);
         sendVisual(player, implantType + 1, 12, 112);
         player.sendMessage(Text.translatable(activationMessage(implantType)), true);
@@ -96,11 +99,11 @@ public final class CyberwareManager {
 
     private static float activationStress(int implantType) {
         return switch (implantType) {
-            case ACCELERATOR -> 7.0f;
-            case OPTICAL_CAMO -> 9.0f;
-            case BERSERK -> 15.0f;
-            case SANDEVISTAN -> 20.0f;
-            case 4 -> 13.0f;
+            case ACCELERATOR -> 12.0f;
+            case OPTICAL_CAMO -> 14.0f;
+            case BERSERK -> 19.0f;
+            case SANDEVISTAN -> 25.0f;
+            case 4 -> 16.0f;
             default -> 0.0f;
         };
     }
@@ -181,22 +184,23 @@ public final class CyberwareManager {
 
     private static void updateStressTier(ServerPlayerEntity player, float stress) {
         UUID uuid = player.getUuid();
-        int tier = stress >= 85.0f ? 2 : stress >= 60.0f ? 1 : 0;
+        int tier = stress >= 65.0f ? 2 : stress >= 35.0f ? 1 : 0;
         int previous = STRESS_TIER.getOrDefault(uuid, 0);
         if (tier == previous) return;
         STRESS_TIER.put(uuid, tier);
 
-        if (tier == 1) {
+        if (tier > previous && tier == 1) {
             player.sendMessage(Text.translatable("message.cyberpunk.neural_load_warning", Math.round(stress)), true);
-            sendVisual(player, 8, 10, 48);
+            sendVisual(player, 8, 16, 62);
             player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME,
-                    SoundCategory.PLAYERS, 0.35f, 0.65f);
-        } else if (tier == 2) {
+                    SoundCategory.PLAYERS, 0.45f, 0.72f);
+        } else if (tier > previous && tier == 2) {
             player.sendMessage(Text.translatable("message.cyberpunk.neural_load_critical"), true);
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 60, 0, false, false, true));
-            player.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 60, 0, false, false, true));
-            sendVisual(player, 9, 18, 96);
-        } else if (previous > 0) {
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 80, 0, false, false, true));
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 80, 0, false, false, true));
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 50, 0, false, false, true));
+            sendVisual(player, 9, 24, 118);
+        } else if (tier < previous && tier == 0) {
             player.sendMessage(Text.translatable("message.cyberpunk.neural_load_stabilized"), true);
         }
     }
@@ -207,14 +211,14 @@ public final class CyberwareManager {
         if (isOverloaded(uuid, now)) return;
 
         ACTIVE.remove(uuid);
-        OVERLOAD_UNTIL.put(uuid, now + 240L);
-        STRESS.put(uuid, 28.0f);
+        OVERLOAD_UNTIL.put(uuid, now + 300L);
+        STRESS.put(uuid, 30.0f);
         STRESS_TIER.put(uuid, 0);
 
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 35, 0, false, false, true));
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 240, 1, false, false, true));
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 240, 1, false, false, true));
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 100, 1, false, false, true));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.BLINDNESS, 45, 0, false, false, true));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.NAUSEA, 300, 1, false, false, true));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.WEAKNESS, 300, 1, false, false, true));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 120, 1, false, false, true));
         player.sendMessage(Text.translatable("message.cyberpunk.cyberpsychosis"), true);
         player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.ENTITY_WARDEN_HEARTBEAT,
                 SoundCategory.PLAYERS, 1.0f, 0.65f);
@@ -261,8 +265,12 @@ public final class CyberwareManager {
             if (player.age % 20 == 0) {
                 ServerWorld world = (ServerWorld) player.getWorld();
                 world.spawnParticles(ParticleTypes.SOUL, player.getX(), player.getY() + 1.0, player.getZ(),
-                        5, 0.35, 0.5, 0.35, 0.015);
-                sendVisual(player, 10, 6, 72);
+                        7, 0.35, 0.5, 0.35, 0.02);
+                sendVisual(player, 10, 7, 82);
+            }
+            if (player.age % 60 == 0) {
+                player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.ENTITY_WARDEN_HEARTBEAT,
+                        SoundCategory.PLAYERS, 0.35f, 0.72f);
             }
             return;
         }
@@ -286,25 +294,25 @@ public final class CyberwareManager {
             }
 
             float stressPerTick = switch (ability.implantType()) {
-                case ACCELERATOR -> 0.018f;
-                case OPTICAL_CAMO -> 0.025f;
-                case BERSERK -> 0.055f;
-                case SANDEVISTAN -> 0.075f;
-                case 4 -> 0.045f;
+                case ACCELERATOR -> 0.035f;
+                case OPTICAL_CAMO -> 0.050f;
+                case BERSERK -> 0.080f;
+                case SANDEVISTAN -> 0.110f;
+                case 4 -> 0.065f;
                 default -> 0.0f;
             };
             addStress(player, stressPerTick);
             if (isOverloaded(uuid, now)) return;
         } else {
-            float stress = Math.max(0.0f, STRESS.getOrDefault(uuid, 0.0f) - 0.035f);
+            float stress = Math.max(0.0f, STRESS.getOrDefault(uuid, 0.0f) - 0.045f);
             STRESS.put(uuid, stress);
             updateStressTier(player, stress);
         }
     }
 
     private static void tickAccelerator(ServerPlayerEntity player) {
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 6, 1, true, false, false));
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 6, 1, true, false, false));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 8, 2, true, false, false));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 8, 1, true, false, false));
         player.getWorld().getEntitiesByClass(
                 LivingEntity.class,
                 player.getBoundingBox().expand(14.0),
@@ -314,50 +322,85 @@ public final class CyberwareManager {
         ));
 
         if (player.age % 3 == 0) {
-            ((ServerWorld) player.getWorld()).spawnParticles(ParticleTypes.ELECTRIC_SPARK,
-                    player.getX(), player.getY() + 0.9, player.getZ(),
-                    5, 0.28, 0.35, 0.28, 0.025);
+            ServerWorld world = (ServerWorld) player.getWorld();
+            double trailX = player.getX() - player.getVelocity().x * 1.5;
+            double trailZ = player.getZ() - player.getVelocity().z * 1.5;
+            world.spawnParticles(ParticleTypes.ELECTRIC_SPARK,
+                    trailX, player.getY() + 0.85, trailZ,
+                    7, 0.24, 0.38, 0.24, 0.035);
+            world.spawnParticles(ParticleTypes.CLOUD,
+                    trailX, player.getY() + 0.15, trailZ,
+                    2, 0.18, 0.08, 0.18, 0.01);
+        }
+        if (player.age % 20 == 0) {
+            sendVisual(player, 1, 6, 22);
+            player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME,
+                    SoundCategory.PLAYERS, 0.18f, 1.9f);
         }
     }
 
     private static void tickOpticalCamo(ServerPlayerEntity player) {
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, 6, 0, true, false, false));
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 6, 0, true, false, false));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.INVISIBILITY, 8, 0, true, false, false));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 8, 1, true, false, false));
 
-        if (player.age % 8 == 0) {
-            ((ServerWorld) player.getWorld()).spawnParticles(ParticleTypes.PORTAL,
+        if (player.age % 6 == 0) {
+            ServerWorld world = (ServerWorld) player.getWorld();
+            world.spawnParticles(ParticleTypes.PORTAL,
                     player.getX(), player.getY() + 0.9, player.getZ(),
-                    3, 0.25, 0.45, 0.25, 0.12);
+                    2, 0.22, 0.42, 0.22, 0.10);
+            world.spawnParticles(ParticleTypes.END_ROD,
+                    player.getX(), player.getY() + 0.8, player.getZ(),
+                    1, 0.25, 0.35, 0.25, 0.006);
+        }
+        if (player.age % 20 == 0) {
+            sendVisual(player, 2, 6, 18);
         }
     }
 
     private static void tickBerserk(ServerPlayerEntity player) {
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 6, 1, true, false, false));
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 6, 1, true, false, false));
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 6, 0, true, false, false));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 8, 2, true, false, false));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 8, 1, true, false, false));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.FIRE_RESISTANCE, 8, 0, true, false, false));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 8, 0, true, false, false));
 
-        if (player.age % 4 == 0) {
-            ((ServerWorld) player.getWorld()).spawnParticles(ParticleTypes.ANGRY_VILLAGER,
+        if (player.age % 3 == 0) {
+            ServerWorld world = (ServerWorld) player.getWorld();
+            world.spawnParticles(ParticleTypes.FLAME,
+                    player.getX(), player.getY() + 0.9, player.getZ(),
+                    3, 0.32, 0.48, 0.32, 0.015);
+            world.spawnParticles(ParticleTypes.CRIT,
                     player.getX(), player.getY() + 1.0, player.getZ(),
-                    1, 0.25, 0.4, 0.25, 0.0);
+                    4, 0.28, 0.42, 0.28, 0.12);
+        }
+        if (player.age % 20 == 0) {
+            sendVisual(player, 3, 6, 20);
+            player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.BLOCK_BEACON_POWER_SELECT,
+                    SoundCategory.PLAYERS, 0.18f, 0.72f);
         }
     }
 
     private static void tickSandevistan(ServerPlayerEntity player) {
-        // The owner keeps normal world ticking and receives a strong burst of movement speed.
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 6, 2, true, false, false));
-        player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 6, 1, true, false, false));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 8, 2, true, false, false));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 8, 1, true, false, false));
 
         if (player.age % 2 == 0) {
-            double trailX = player.getX() - player.getVelocity().x * 2.0;
-            double trailZ = player.getZ() - player.getVelocity().z * 2.0;
+            double trailX = player.getX() - player.getVelocity().x * 2.4;
+            double trailZ = player.getZ() - player.getVelocity().z * 2.4;
             ServerWorld world = (ServerWorld) player.getWorld();
             world.spawnParticles(ParticleTypes.ELECTRIC_SPARK,
                     trailX, player.getY() + 0.85, trailZ,
-                    4, 0.12, 0.38, 0.12, 0.025);
+                    6, 0.12, 0.38, 0.12, 0.035);
             world.spawnParticles(ParticleTypes.END_ROD,
                     trailX, player.getY() + 0.85, trailZ,
-                    1, 0.08, 0.25, 0.08, 0.005);
+                    2, 0.08, 0.25, 0.08, 0.008);
+            world.spawnParticles(ParticleTypes.CLOUD,
+                    trailX, player.getY() + 0.12, trailZ,
+                    1, 0.1, 0.05, 0.1, 0.005);
+        }
+        if (player.age % 20 == 0) {
+            sendVisual(player, 4, 7, 26);
+            player.getWorld().playSound(null, player.getBlockPos(), SoundEvents.BLOCK_BEACON_ACTIVATE,
+                    SoundCategory.PLAYERS, 0.12f, 2.0f);
         }
     }
 
@@ -371,7 +414,12 @@ public final class CyberwareManager {
                     player.getX() + look.x, player.getY() + 1.0, player.getZ() + look.z,
                     2, 0.25, 0.35, 0.25, 0.0);
             world.spawnParticles(ParticleTypes.CRIT, player.getX(), player.getY() + 0.8, player.getZ(),
-                    4, 0.22, 0.45, 0.22, 0.08);
+                    5, 0.22, 0.45, 0.22, 0.10);
+            world.spawnParticles(ParticleTypes.ELECTRIC_SPARK, player.getX(), player.getY() + 0.8, player.getZ(),
+                    3, 0.22, 0.35, 0.22, 0.02);
+        }
+        if (player.age % 20 == 0) {
+            sendVisual(player, 5, 6, 20);
         }
     }
 
