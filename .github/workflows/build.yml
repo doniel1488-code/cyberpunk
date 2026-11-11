@@ -79,7 +79,7 @@ jobs:
           jar = 'build/libs/cyberpunk-fabric-0.1.0-alpha.8.jar'
 
           def validate_png(name, data):
-              signature = b'\\x89PNG\\r\\n\\x1a\\n'
+              signature = bytes([137]) + b'PNG' + bytes([13, 10, 26, 10])
               assert data.startswith(signature), f'{name}: invalid PNG signature'
               offset = len(signature)
               width = height = None
