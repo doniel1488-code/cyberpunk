@@ -55,8 +55,8 @@ jobs:
             grep -qx "assets/cyberpunk/items/$item.json" /tmp/jar-contents.txt
             grep -qx "data/cyberpunk/recipe/$item.json" /tmp/jar-contents.txt
           done
-          grep -q 'item.cyberpunk.blood_pump' /tmp/jar-contents.txt
-          grep -q 'item.cyberpunk.gorilla_arms' /tmp/jar-contents.txt
+          unzip -p "$JAR" assets/cyberpunk/lang/ru_ru.json | grep -q '"item.cyberpunk.blood_pump"'
+          unzip -p "$JAR" assets/cyberpunk/lang/ru_ru.json | grep -q '"item.cyberpunk.gorilla_arms"'
 
       - name: Validate JSON resources and locale parity
         shell: bash
