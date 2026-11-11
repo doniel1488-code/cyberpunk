@@ -16,7 +16,7 @@
   "message.cyberpunk.activated": "Cyberware activated.",
   "message.cyberpunk.sandevistan_activated": "SANDEVISTAN ONLINE — TIME DILATED.",
   "message.cyberpunk.ability_ended": "Implant effect ended.",
-  "message.cyberpunk.cyberpsychosis": "CRITICAL NEURAL LOAD — CYBERPSYCHOSIS!",
+  "message.cyberpunk.cyberpsychosis": "CYBERPSYCHOSIS // CONTROL LOST. THE CYBORG ATTACKS EVERYTHING NEARBY!",
   "message.cyberpunk.accelerator_activated": "NEURAL ACCELERATOR // BURST ENGAGED",
   "message.cyberpunk.camo_activated": "OPTICAL CAMO // CLOAK ACTIVE",
   "message.cyberpunk.berserk_activated": "BERSERK // COMBAT ROUTINE ENGAGED",
@@ -28,10 +28,11 @@
   "visual.cyberpunk.accelerator": "NEURAL ACCELERATOR // BURST",
   "visual.cyberpunk.camo": "OPTICAL CAMOUFLAGE ACTIVE",
   "visual.cyberpunk.berserk": "COMBAT MODE",
-  "visual.cyberpunk.sandevistan": "SANDEVISTAN // TIME DILATION",
+  "visual.cyberpunk.sandevistan": "SANDEVISTAN // AFTERIMAGES ACTIVE",
   "visual.cyberpunk.mantis": "MANTIS BLADES DEPLOYED",
   "visual.cyberpunk.warning": "NEURAL LOAD ELEVATED",
   "visual.cyberpunk.critical": "CRITICAL NEURAL LOAD",
-  "visual.cyberpunk.psychosis": "CYBERPSYCHOSIS // CONTROL LOST",
-  "visual.cyberpunk.system": "CYBERWARE SYSTEM"
+  "visual.cyberpunk.psychosis": "CYBERPSYCHOSIS // RAMPAGE MODE",
+  "visual.cyberpunk.system": "CYBERWARE SYSTEM",
+  "message.cyberpunk.cyberpsychosis_recovered": "NEURAL SYSTEM REBOOTED // CONTROL RESTORED."
 }

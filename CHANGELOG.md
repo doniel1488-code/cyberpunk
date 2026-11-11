@@ -1,33 +1,32 @@
 # Changelog
 
+## 0.1.0-alpha.5
+
+- Added synchronized Sandevistan trail state for nearby clients.
+- Added a client-side afterimage renderer that records player position/rotation history and draws up to seven cyan outline silhouettes using the player's current model, skin and equipment.
+- Added a short fade-out when Sandevistan ends or is interrupted.
+- Reworked cyberpsychosis into a 15-second uncontrolled rage state after a brief seizure.
+- During rage, the cyberpsycho receives Strength IV, Speed III, Resistance II, Haste II and Fire Resistance.
+- Added nearest attackable target selection within 24 blocks, direct pursuit and repeated melee attacks.
+- Rage can attack mobs, animals, villagers and non-creative/non-spectator players, then selects another target when the current one is lost.
+- Added rage particles, combat audio and recovery messaging.
+- Added server-side cleanup when a player disconnects.
+- Updated CI to verify the trail payload/renderer and the new localization key.
+
 ## 0.1.0-alpha.4
 
-- Increased Neural Accelerator to Speed III and Haste II and added a stronger electric/cloud afterimage.
-- Optical Camo now provides Speed II with denser portal shimmer and end-rod glints.
-- Berserk now grants Strength III, Resistance II, Fire Resistance and Speed I, with flame and critical-hit particles.
-- Sandevistan now has a longer electric afterimage, stronger usage pulses and periodic activation audio.
-- Each active implant sends subtle synchronized client-side visual pulses while it is running.
-- Rebalanced neural load: 35% warning, 65% critical stage, 100% cyberpsychosis.
-- Cyberpsychosis now interrupts the current implant, locks cyberware for 15 seconds, applies a short blindness flash plus 15 seconds of nausea/weakness and 6 seconds of slowness, then resets neural load to 30%.
-- Added red screen interference and recurring heartbeat/particle feedback during overload.
-- Fixed activation ordering so an implant cannot start after the same activation has triggered cyberpsychosis.
+- Rebalanced the four existing implant effects and neural load.
+- Added per-implant activation bursts, active pulses and cyberpsychosis screen interference.
 
 ## 0.1.0-alpha.3
 
-- Added per-implant activation sounds, particle bursts and client-side colored HUD flashes.
+- Added activation sounds, particle bursts and client-side colored HUD flashes.
 - Redesigned neural stress into warning, critical and overload thresholds.
-- Added client-side visual payloads and Russian/English text for activation and neural-load cues.
 
 ## 0.1.0-alpha.2
 
-- Added the Sandevistan «Apogee» implant with its own item icon, model, recipe and Russian/English localization.
-- Added the B keybind and server-side activation payload.
-- Added a 9-second Sandevistan field with a 64-block radius and a 15-second cooldown.
-- Added a MobEntity Mixin that allows nearby mobs to run one full tick out of every seven while the field is active.
-- Added Speed III to the owner and an electric afterimage particle trail.
+- Added Sandevistan with time dilation for nearby mobs, Speed III, electric trail particles and a separate keybind.
 
 ## 0.1.0-alpha.1
 
-- Initial Fabric 1.21.8 project structure with Java 21 and Fabric API.
-- Added Neural Accelerator, Optical Camo and Berserk modules.
-- Added server-side ability validation, cooldowns, neural stress, localization, recipes and original item icons.
+- Initial Fabric 1.21.8 project and first three implant chips.

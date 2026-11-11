@@ -16,7 +16,7 @@
   "message.cyberpunk.activated": "Киберсистема активирована.",
   "message.cyberpunk.sandevistan_activated": "САНДЕВИСТАН АКТИВИРОВАН — ВРЕМЯ ЗАМЕДЛЕНО.",
   "message.cyberpunk.ability_ended": "Действие импланта завершилось.",
-  "message.cyberpunk.cyberpsychosis": "КРИТИЧЕСКАЯ НАГРУЗКА НЕЙРОСЕТИ — КИБЕРПСИХОЗ!",
+  "message.cyberpunk.cyberpsychosis": "КИБЕРПСИХОЗ // КОНТРОЛЬ ПОТЕРЯН. КИБОРГ АТАКУЕТ ВСЕХ РЯДОМ!",
   "message.cyberpunk.accelerator_activated": "НЕЙРОУСКОРИТЕЛЬ // ИМПУЛЬС ЗАПУЩЕН",
   "message.cyberpunk.camo_activated": "ОПТИЧЕСКИЙ КАМУФЛЯЖ // МАСКИРОВКА АКТИВНА",
   "message.cyberpunk.berserk_activated": "БЕРСЕРК // БОЕВОЙ КОНТУР ПОДКЛЮЧЁН",
@@ -28,10 +28,11 @@
   "visual.cyberpunk.accelerator": "ИМПУЛЬС // СКОРОСТЬ ВОЗРОСЛА",
   "visual.cyberpunk.camo": "ОПТИЧЕСКИЙ КАМУФЛЯЖ АКТИВЕН",
   "visual.cyberpunk.berserk": "БОЕВОЙ РЕЖИМ",
-  "visual.cyberpunk.sandevistan": "САНДЕВИСТАН // ЗАМЕДЛЕНИЕ ВРЕМЕНИ",
+  "visual.cyberpunk.sandevistan": "САНДЕВИСТАН // ПОСЛЕОБРАЗЫ АКТИВНЫ",
   "visual.cyberpunk.mantis": "МАНТИС-КЛИНКИ РАЗВЁРНУТЫ",
   "visual.cyberpunk.warning": "НЕЙРОНАГРУЗКА ПОВЫШЕНА",
   "visual.cyberpunk.critical": "КРИТИЧЕСКАЯ НЕЙРОНАГРУЗКА",
-  "visual.cyberpunk.psychosis": "КИБЕРПСИХОЗ // КОНТРОЛЬ ПОТЕРЯН",
-  "visual.cyberpunk.system": "КИБЕРСИСТЕМА"
+  "visual.cyberpunk.psychosis": "КИБЕРПСИХОЗ // РЕЖИМ ЯРОСТИ",
+  "visual.cyberpunk.system": "КИБЕРСИСТЕМА",
+  "message.cyberpunk.cyberpsychosis_recovered": "НЕЙРОСЕТЬ ПЕРЕЗАГРУЖЕНА // КОНТРОЛЬ ВОССТАНОВЛЕН."
 }
