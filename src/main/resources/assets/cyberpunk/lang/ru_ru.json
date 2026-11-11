@@ -8,7 +8,7 @@
   "key.cyberpunk.berserk": "Активировать «Берсерк»",
   "key.cyberpunk.sandevistan": "Активировать Сандевистан",
   "category.cyberpunk.implants": "Cyberpunk: импланты",
-  "message.cyberpunk.implant_installed": "Имплант установлен: %s. Активация: %s",
+  "message.cyberpunk.implant_installed": "Имплант установлен: %s. Активация: %s. Снятие: /cyberware remove ИМЯ_ИМПЛАНТА",
   "message.cyberpunk.implant_already_installed": "Этот имплант уже установлен.",
   "message.cyberpunk.not_installed": "Сначала установи этот имплант.",
   "message.cyberpunk.cooldown": "Перезарядка: %s сек.",
@@ -51,7 +51,7 @@
   "visual.cyberpunk.gorilla": "РУКИ ГОРИЛЛЫ // УСИЛЕНИЕ УДАРА",
   "visual.cyberpunk.kerenzikov": "КЕРЕНЗИКОВ // РЕФЛЕКСЫ УСКОРЕНЫ",
   "visual.cyberpunk.blood_pump": "КРОВЯНОЙ НАСОС // ВОССТАНОВЛЕНИЕ",
-  "message.cyberpunk.implant_uninstalled": "Имплант снят. Чип не израсходован.",
+  "message.cyberpunk.implant_uninstalled": "Имплант снят. Нейронагрузка сохранена.",
   "message.cyberpunk.passive": "Пассивный эффект",
   "message.cyberpunk.status_header": "КИБЕРНЕТИКА // Нейронагрузка: %s%%",
   "message.cyberpunk.status_installed": "УСТАНОВЛЕН",
@@ -73,5 +73,6 @@
   "description.cyberpunk.gorilla_arms": "Усиливает удары и сильно отбрасывает цель.",
   "description.cyberpunk.kerenzikov": "Делает рывок по направлению взгляда и ускоряет рефлексы.",
   "description.cyberpunk.subdermal_armor": "Пассивно даёт Resistance I, пока имплант установлен.",
-  "description.cyberpunk.blood_pump": "Восстанавливает здоровье, даёт регенерацию и поглощение."
+  "description.cyberpunk.blood_pump": "Восстанавливает здоровье, даёт регенерацию и поглощение.",
+  "message.cyberpunk.unknown_implant": "Неизвестный имплант: %s. Список: /cyberware"
 }

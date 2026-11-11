@@ -8,7 +8,7 @@
   "key.cyberpunk.berserk": "Activate Berserk",
   "key.cyberpunk.sandevistan": "Activate Sandevistan",
   "category.cyberpunk.implants": "Cyberpunk: Implants",
-  "message.cyberpunk.implant_installed": "Installed: %s. Activation: %s",
+  "message.cyberpunk.implant_installed": "Installed: %s. Activation: %s. Remove with /cyberware remove IMPLANT_ID",
   "message.cyberpunk.implant_already_installed": "This implant is already installed.",
   "message.cyberpunk.not_installed": "Install this implant first.",
   "message.cyberpunk.cooldown": "Cooldown: %s s",
@@ -51,7 +51,7 @@
   "visual.cyberpunk.gorilla": "GORILLA ARMS // IMPACT BOOST",
   "visual.cyberpunk.kerenzikov": "KERENZIKOV // REFLEX BOOST",
   "visual.cyberpunk.blood_pump": "BLOOD PUMP // RECOVERY",
-  "message.cyberpunk.implant_uninstalled": "Implant removed. The chip was not consumed.",
+  "message.cyberpunk.implant_uninstalled": "Implant removed. Neural load was kept.",
   "message.cyberpunk.passive": "Passive effect",
   "message.cyberpunk.status_header": "CYBERWARE // Neural load: %s%%",
   "message.cyberpunk.status_installed": "INSTALLED",
@@ -73,5 +73,6 @@
   "description.cyberpunk.gorilla_arms": "Strengthens melee hits and heavily knocks targets back.",
   "description.cyberpunk.kerenzikov": "Dashes in the look direction and boosts reflexes.",
   "description.cyberpunk.subdermal_armor": "Passively grants Resistance I while installed.",
-  "description.cyberpunk.blood_pump": "Restores health and grants regeneration and absorption."
+  "description.cyberpunk.blood_pump": "Restores health and grants regeneration and absorption.",
+  "message.cyberpunk.unknown_implant": "Unknown implant: %s. Use /cyberware to list implants."
 }

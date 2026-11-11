@@ -74,6 +74,21 @@ public final class CyberwareManager {
         };
     }
 
+    public static int getImplantTypeById(String id) {
+        return switch (id) {
+            case "neural_accelerator" -> ACCELERATOR;
+            case "optical_camo" -> OPTICAL_CAMO;
+            case "berserk_module" -> BERSERK;
+            case "sandevistan" -> SANDEVISTAN;
+            case "mantis_arms" -> MANTIS_ARMS;
+            case "gorilla_arms" -> GORILLA_ARMS;
+            case "kerenzikov" -> KERENZIKOV;
+            case "subdermal_armor" -> SUBDERMAL_ARMOR;
+            case "blood_pump" -> BLOOD_PUMP;
+            default -> -1;
+        };
+    }
+
     public static void uninstall(ServerPlayerEntity player, int implantType) {
         UUID uuid = player.getUuid();
         if (!player.getCommandTags().remove(getInstallTag(implantType))) {
