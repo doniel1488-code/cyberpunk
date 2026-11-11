@@ -42,6 +42,7 @@ public final class CyberwareManager {
             case OPTICAL_CAMO -> "cyberpunk.implant.optical_camo";
             case BERSERK -> "cyberpunk.implant.berserk";
             case SANDEVISTAN -> "cyberpunk.implant.sandevistan";
+            case 4 -> "cyberpunk.implant.mantis_arms";
             default -> throw new IllegalArgumentException("Unknown implant type: " + implantType);
         };
     }
@@ -358,6 +359,20 @@ public final class CyberwareManager {
             world.spawnParticles(ParticleTypes.END_ROD,
                     trailX, player.getY() + 0.85, trailZ,
                     1, 0.08, 0.25, 0.08, 0.005);
+        }
+    }
+
+    private static void tickMantisArms(ServerPlayerEntity player) {
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 8, 2, true, false, false));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 8, 1, true, false, false));
+        if (player.age % 3 == 0) {
+            Vec3d look = player.getRotationVec(1.0f);
+            ServerWorld world = (ServerWorld) player.getWorld();
+            world.spawnParticles(ParticleTypes.SWEEP_ATTACK,
+                    player.getX() + look.x, player.getY() + 1.0, player.getZ() + look.z,
+                    2, 0.25, 0.35, 0.25, 0.0);
+            world.spawnParticles(ParticleTypes.CRIT, player.getX(), player.getY() + 0.8, player.getZ(),
+                    4, 0.22, 0.45, 0.22, 0.08);
         }
     }
 
