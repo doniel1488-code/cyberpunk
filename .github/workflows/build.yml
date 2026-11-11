@@ -1,0 +1,52 @@
+name: Build Cyberpunk Fabric
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Minecraft 1.21.8 / Fabric
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Gradle 8.14.3
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.14.3'
+
+      - name: Build and remap
+        run: gradle --no-daemon clean build
+
+      - name: Verify expected JAR
+        shell: bash
+        run: |
+          set -euo pipefail
+          JAR="build/libs/cyberpunk-fabric-0.1.0-alpha.1.jar"
+          test -f "$JAR"
+          jar tf "$JAR" > /tmp/jar-contents.txt
+          grep -q 'fabric.mod.json' /tmp/jar-contents.txt
+          grep -q 'assets/cyberpunk/lang/ru_ru.json' /tmp/jar-contents.txt
+          grep -q 'assets/cyberpunk/textures/item/neural_accelerator.png' /tmp/jar-contents.txt
+          grep -q 'data/cyberpunk/recipe/neural_accelerator.json' /tmp/jar-contents.txt
+
+      - name: Upload mod JAR
+        uses: actions/upload-artifact@v4
+        with:
+          name: cyberpunk-fabric-1.21.8
+          path: build/libs/cyberpunk-fabric-0.1.0-alpha.1.jar
+          if-no-files-found: error
+          retention-days: 30
