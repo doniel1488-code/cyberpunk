@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["EDE", "QFQ", " R "],
+  "key": {
+    "E": { "item": "minecraft:echo_shard" },
+    "D": { "item": "minecraft:diamond" },
+    "Q": { "item": "minecraft:quartz" },
+    "F": { "item": "minecraft:rabbit_foot" },
+    "R": { "item": "minecraft:redstone" }
+  },
+  "result": { "id": "cyberpunk:kerenzikov", "count": 1 }
+}

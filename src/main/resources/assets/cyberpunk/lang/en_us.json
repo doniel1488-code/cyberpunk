@@ -34,5 +34,21 @@
   "visual.cyberpunk.critical": "CRITICAL NEURAL LOAD",
   "visual.cyberpunk.psychosis": "CYBERPSYCHOSIS // RAMPAGE MODE",
   "visual.cyberpunk.system": "CYBERWARE SYSTEM",
-  "message.cyberpunk.cyberpsychosis_recovered": "NEURAL SYSTEM REBOOTED // CONTROL RESTORED."
+  "message.cyberpunk.cyberpsychosis_recovered": "NEURAL SYSTEM REBOOTED // CONTROL RESTORED.",
+  "item.cyberpunk.mantis_arms": "Mantis Blades",
+  "item.cyberpunk.gorilla_arms": "Gorilla Arms",
+  "item.cyberpunk.kerenzikov": "Kerenzikov",
+  "item.cyberpunk.subdermal_armor": "Subdermal Armor",
+  "item.cyberpunk.blood_pump": "Blood Pump",
+  "key.cyberpunk.mantis_arms": "Activate Mantis Blades",
+  "key.cyberpunk.gorilla_arms": "Activate Gorilla Arms",
+  "key.cyberpunk.kerenzikov": "Activate Kerenzikov",
+  "key.cyberpunk.blood_pump": "Activate Blood Pump",
+  "message.cyberpunk.gorilla_activated": "GORILLA ARMS // POWER ROUTINE ENGAGED",
+  "message.cyberpunk.kerenzikov_activated": "KERENZIKOV // REFLEXES BOOSTED",
+  "message.cyberpunk.blood_pump_activated": "BLOOD PUMP // RECOVERY SYSTEM ENGAGED",
+  "message.cyberpunk.subdermal_is_passive": "SUBDERMAL ARMOR // PASSIVE DEFENSE ONLINE",
+  "visual.cyberpunk.gorilla": "GORILLA ARMS // IMPACT BOOST",
+  "visual.cyberpunk.kerenzikov": "KERENZIKOV // REFLEX BOOST",
+  "visual.cyberpunk.blood_pump": "BLOOD PUMP // RECOVERY"
 }

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["IDI", "NGN", "III"],
+  "key": {
+    "I": { "item": "minecraft:iron_ingot" },
+    "D": { "item": "minecraft:diamond_chestplate" },
+    "N": { "item": "minecraft:netherite_scrap" },
+    "G": { "item": "minecraft:gold_block" }
+  },
+  "result": { "id": "cyberpunk:subdermal_armor", "count": 1 }
+}

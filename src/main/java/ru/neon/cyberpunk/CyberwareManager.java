@@ -2,6 +2,7 @@ package ru.neon.cyberpunk;
 
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.entity.LivingEntity;
+import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
@@ -24,6 +25,11 @@ public final class CyberwareManager {
     private static final int OPTICAL_CAMO = 1;
     private static final int BERSERK = 2;
     private static final int SANDEVISTAN = 3;
+    private static final int MANTIS_ARMS = 4;
+    private static final int GORILLA_ARMS = 5;
+    private static final int KERENZIKOV = 6;
+    private static final int SUBDERMAL_ARMOR = 7;
+    private static final int BLOOD_PUMP = 8;
 
     private static final double SANDEVISTAN_RADIUS = 64.0;
     private static final Map<UUID, ActiveAbility> ACTIVE = new HashMap<>();
@@ -33,6 +39,7 @@ public final class CyberwareManager {
     private static final Map<UUID, Long> OVERLOAD_UNTIL = new HashMap<>();
     private static final Map<UUID, Integer> RAGE_TARGETS = new HashMap<>();
     private static final Map<UUID, Long> RAGE_NEXT_ATTACK = new HashMap<>();
+    private static final Map<UUID, Long> GORILLA_HIT_READY = new HashMap<>();
 
     private CyberwareManager() {
     }
@@ -43,13 +50,17 @@ public final class CyberwareManager {
             case OPTICAL_CAMO -> "cyberpunk.implant.optical_camo";
             case BERSERK -> "cyberpunk.implant.berserk";
             case SANDEVISTAN -> "cyberpunk.implant.sandevistan";
-            case 4 -> "cyberpunk.implant.mantis_arms";
+            case MANTIS_ARMS -> "cyberpunk.implant.mantis_arms";
+            case GORILLA_ARMS -> "cyberpunk.implant.gorilla_arms";
+            case KERENZIKOV -> "cyberpunk.implant.kerenzikov";
+            case SUBDERMAL_ARMOR -> "cyberpunk.implant.subdermal_armor";
+            case BLOOD_PUMP -> "cyberpunk.implant.blood_pump";
             default -> throw new IllegalArgumentException("Unknown implant type: " + implantType);
         };
     }
 
     public static void activate(ServerPlayerEntity player, int implantType) {
-        if (implantType < ACCELERATOR || implantType > BERSERK + 2) {
+        if (implantType < ACCELERATOR || implantType > BLOOD_PUMP) {
             return;
         }
 
@@ -62,6 +73,14 @@ public final class CyberwareManager {
         String tag = getInstallTag(implantType);
         if (!player.getCommandTags().contains(tag)) {
             player.sendMessage(Text.translatable("message.cyberpunk.not_installed"), true);
+            return;
+        }
+        if (implantType == SUBDERMAL_ARMOR) {
+            player.sendMessage(Text.translatable("message.cyberpunk.subdermal_is_passive"), true);
+            return;
+        }
+        if (implantType == BLOOD_PUMP) {
+            activateBloodPump(player, now);
             return;
         }
 
@@ -84,7 +103,9 @@ public final class CyberwareManager {
             case OPTICAL_CAMO -> { duration = 160; cooldown = 480; }
             case BERSERK -> { duration = 140; cooldown = 500; }
             case SANDEVISTAN -> { duration = 180; cooldown = 300; }
-            case 4 -> { duration = 120; cooldown = 420; }
+            case MANTIS_ARMS -> { duration = 120; cooldown = 420; }
+            case GORILLA_ARMS -> { duration = 200; cooldown = 600; }
+            case KERENZIKOV -> { duration = 60; cooldown = 240; }
             default -> { return; }
         }
 
@@ -95,7 +116,12 @@ public final class CyberwareManager {
         ACTIVE.put(uuid, new ActiveAbility(implantType, now + duration));
         playerCooldowns.put(implantType, now + cooldown);
         activationBurst(player, implantType);
-        sendVisual(player, implantType + 1, 12, 112);
+        int visualId = switch (implantType) {
+            case GORILLA_ARMS -> 12;
+            case KERENZIKOV -> 13;
+            default -> implantType + 1;
+        };
+        sendVisual(player, visualId, 12, 112);
         if (implantType == SANDEVISTAN) broadcastSandevistanTrail(player, duration + 20);
         player.sendMessage(Text.translatable(activationMessage(implantType)), true);
     }
@@ -106,7 +132,9 @@ public final class CyberwareManager {
             case OPTICAL_CAMO -> 14.0f;
             case BERSERK -> 19.0f;
             case SANDEVISTAN -> 25.0f;
-            case 4 -> 16.0f;
+            case MANTIS_ARMS -> 16.0f;
+            case GORILLA_ARMS -> 22.0f;
+            case KERENZIKOV -> 12.0f;
             default -> 0.0f;
         };
     }
@@ -117,7 +145,9 @@ public final class CyberwareManager {
             case OPTICAL_CAMO -> "message.cyberpunk.camo_activated";
             case BERSERK -> "message.cyberpunk.berserk_activated";
             case SANDEVISTAN -> "message.cyberpunk.sandevistan_activated";
-            case 4 -> "message.cyberpunk.mantis_activated";
+            case MANTIS_ARMS -> "message.cyberpunk.mantis_activated";
+            case GORILLA_ARMS -> "message.cyberpunk.gorilla_activated";
+            case KERENZIKOV -> "message.cyberpunk.kerenzikov_activated";
             default -> "message.cyberpunk.activated";
         };
     }
@@ -154,11 +184,31 @@ public final class CyberwareManager {
                 world.spawnParticles(ParticleTypes.ELECTRIC_SPARK, x, y, z, 56, 0.8, 0.8, 0.8, 0.08);
                 world.spawnParticles(ParticleTypes.END_ROD, x, y, z, 28, 0.55, 0.65, 0.55, 0.05);
             }
-            case 4 -> {
+            case MANTIS_ARMS -> {
                 world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_PLAYER_ATTACK_SWEEP,
                         SoundCategory.PLAYERS, 1.0f, 0.7f);
                 world.spawnParticles(ParticleTypes.SWEEP_ATTACK, x, y, z, 10, 0.7, 0.3, 0.7, 0.0);
                 world.spawnParticles(ParticleTypes.CRIT, x, y, z, 24, 0.55, 0.65, 0.55, 0.16);
+            }
+            case GORILLA_ARMS -> {
+                world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_IRON_GOLEM_ATTACK,
+                        SoundCategory.PLAYERS, 0.9f, 0.65f);
+                world.spawnParticles(ParticleTypes.EXPLOSION, x, y, z, 3, 0.45, 0.3, 0.45, 0.0);
+                world.spawnParticles(ParticleTypes.CRIT, x, y, z, 32, 0.5, 0.6, 0.5, 0.18);
+                world.spawnParticles(ParticleTypes.CLOUD, x, y, z, 15, 0.6, 0.3, 0.6, 0.045);
+            }
+            case KERENZIKOV -> {
+                world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_ENDERMAN_TELEPORT,
+                        SoundCategory.PLAYERS, 0.75f, 1.85f);
+                world.spawnParticles(ParticleTypes.ELECTRIC_SPARK, x, y, z, 42, 0.75, 0.65, 0.75, 0.07);
+                world.spawnParticles(ParticleTypes.CLOUD, x, y, z, 14, 0.5, 0.2, 0.5, 0.035);
+                Vec3d look = player.getRotationVec(1.0f);
+                Vec3d dash = new Vec3d(look.x, 0.0, look.z);
+                if (dash.lengthSquared() > 0.001) {
+                    dash = dash.normalize();
+                    Vec3d oldVelocity = player.getVelocity();
+                    player.setVelocity(dash.x * 1.45, Math.max(oldVelocity.y, 0.20), dash.z * 1.45);
+                }
             }
         }
     }
@@ -210,6 +260,73 @@ public final class CyberwareManager {
             sendVisual(player, 9, 24, 118);
         } else if (tier < previous && tier == 0) {
             player.sendMessage(Text.translatable("message.cyberpunk.neural_load_stabilized"), true);
+        }
+    }
+
+    private static void activateBloodPump(ServerPlayerEntity player, long now) {
+        UUID uuid = player.getUuid();
+        Map<Integer, Long> playerCooldowns = COOLDOWNS.computeIfAbsent(uuid, ignored -> new HashMap<>());
+        long readyAt = playerCooldowns.getOrDefault(BLOOD_PUMP, 0L);
+        if (now < readyAt) {
+            player.sendMessage(Text.translatable("message.cyberpunk.cooldown",
+                    Math.max(1L, (readyAt - now + 19L) / 20L)), true);
+            return;
+        }
+
+        addStress(player, 18.0f);
+        if (isOverloaded(uuid, now)) return;
+
+        playerCooldowns.put(BLOOD_PUMP, now + 900L);
+        player.heal(8.0f);
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 120, 1, true, true, true));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.ABSORPTION, 200, 0, true, true, true));
+        player.removeStatusEffect(StatusEffects.POISON);
+        player.removeStatusEffect(StatusEffects.WITHER);
+
+        ServerWorld world = (ServerWorld) player.getWorld();
+        world.playSound(null, player.getBlockPos(), SoundEvents.ITEM_TOTEM_USE,
+                SoundCategory.PLAYERS, 0.8f, 1.35f);
+        world.spawnParticles(ParticleTypes.HEART, player.getX(), player.getY() + 1.0, player.getZ(),
+                14, 0.5, 0.6, 0.5, 0.04);
+        world.spawnParticles(ParticleTypes.TOTEM_OF_UNDYING, player.getX(), player.getY() + 1.0, player.getZ(),
+                28, 0.55, 0.65, 0.55, 0.12);
+        sendVisual(player, 14, 16, 135);
+        player.sendMessage(Text.translatable("message.cyberpunk.blood_pump_activated"), true);
+    }
+
+    public static void onAfterDamage(LivingEntity target, DamageSource source, float damageTaken) {
+        if (target.getWorld().isClient) return;
+
+        if (source.getAttacker() instanceof ServerPlayerEntity attacker) {
+            ActiveAbility ability = ACTIVE.get(attacker.getUuid());
+            if (ability != null && ability.implantType() == GORILLA_ARMS && target != attacker) {
+                Vec3d direction = target.getPos().subtract(attacker.getPos());
+                Vec3d horizontal = new Vec3d(direction.x, 0.0, direction.z);
+                if (horizontal.lengthSquared() > 0.001) {
+                    horizontal = horizontal.normalize();
+                    target.addVelocity(horizontal.x * 0.95, 0.30, horizontal.z * 0.95);
+                }
+                ServerWorld world = (ServerWorld) target.getWorld();
+                world.spawnParticles(ParticleTypes.CRIT, target.getX(), target.getBodyY(0.55), target.getZ(),
+                        10, 0.28, 0.35, 0.28, 0.13);
+                world.playSound(null, target.getBlockPos(), SoundEvents.ENTITY_IRON_GOLEM_ATTACK,
+                        SoundCategory.PLAYERS, 0.45f, 1.4f);
+            } else if (ability != null && ability.implantType() == MANTIS_ARMS && target != attacker) {
+                target.addStatusEffect(new StatusEffectInstance(StatusEffects.POISON, 40, 0, false, true, true));
+                ServerWorld world = (ServerWorld) target.getWorld();
+                world.spawnParticles(ParticleTypes.CRIT, target.getX(), target.getBodyY(0.55), target.getZ(),
+                        5, 0.2, 0.3, 0.2, 0.08);
+            }
+        }
+
+        if (target instanceof ServerPlayerEntity wearer
+                && wearer.getCommandTags().contains(getInstallTag(SUBDERMAL_ARMOR))
+                && damageTaken > 0.0f) {
+            ServerWorld world = (ServerWorld) wearer.getWorld();
+            world.spawnParticles(ParticleTypes.ELECTRIC_SPARK, wearer.getX(), wearer.getY() + 0.9, wearer.getZ(),
+                    6, 0.28, 0.42, 0.28, 0.025);
+            world.playSound(null, wearer.getBlockPos(), SoundEvents.ITEM_ARMOR_EQUIP_NETHERITE,
+                    SoundCategory.PLAYERS, 0.18f, 1.8f);
         }
     }
 
@@ -352,10 +469,15 @@ public final class CyberwareManager {
             }
 
             ActiveAbility ability = ACTIVE.get(owner.getUuid());
-            if (ability != null
-                    && ability.implantType() == SANDEVISTAN
-                    && owner.squaredDistanceTo(mob) <= SANDEVISTAN_RADIUS * SANDEVISTAN_RADIUS) {
-                return true;
+            if (ability != null) {
+                if (ability.implantType() == SANDEVISTAN
+                        && owner.squaredDistanceTo(mob) <= SANDEVISTAN_RADIUS * SANDEVISTAN_RADIUS) {
+                    return true;
+                }
+                if (ability.implantType() == KERENZIKOV
+                        && owner.squaredDistanceTo(mob) <= 12.0 * 12.0) {
+                    return true;
+                }
             }
         }
         return false;
@@ -375,11 +497,17 @@ public final class CyberwareManager {
         OVERLOAD_UNTIL.remove(uuid);
         RAGE_TARGETS.remove(uuid);
         RAGE_NEXT_ATTACK.remove(uuid);
+        GORILLA_HIT_READY.remove(uuid);
     }
 
     private static void tickPlayer(ServerPlayerEntity player) {
         UUID uuid = player.getUuid();
         long now = player.getWorld().getTime();
+
+        // Subdermal Armor is passive and remains online even during other implant states.
+        if (player.getCommandTags().contains(getInstallTag(SUBDERMAL_ARMOR))) {
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 25, 0, true, false, false));
+        }
 
         Long rageEndsAt = OVERLOAD_UNTIL.get(uuid);
         if (rageEndsAt != null && now < rageEndsAt) {
@@ -414,7 +542,9 @@ public final class CyberwareManager {
                 case OPTICAL_CAMO -> tickOpticalCamo(player);
                 case BERSERK -> tickBerserk(player);
                 case SANDEVISTAN -> tickSandevistan(player);
-                case 4 -> tickMantisArms(player);
+                case MANTIS_ARMS -> tickMantisArms(player);
+                case GORILLA_ARMS -> tickGorillaArms(player);
+                case KERENZIKOV -> tickKerenzikov(player);
                 default -> ACTIVE.remove(uuid);
             }
 
@@ -423,7 +553,9 @@ public final class CyberwareManager {
                 case OPTICAL_CAMO -> 0.050f;
                 case BERSERK -> 0.080f;
                 case SANDEVISTAN -> 0.110f;
-                case 4 -> 0.065f;
+                case MANTIS_ARMS -> 0.065f;
+                case GORILLA_ARMS -> 0.095f;
+                case KERENZIKOV -> 0.060f;
                 default -> 0.0f;
             };
             addStress(player, stressPerTick);
@@ -547,6 +679,41 @@ public final class CyberwareManager {
         if (player.age % 20 == 0) {
             sendVisual(player, 5, 6, 20);
         }
+    }
+
+    private static void tickGorillaArms(ServerPlayerEntity player) {
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 10, 3, true, false, false));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 10, 0, true, false, false));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.HASTE, 10, 1, true, false, false));
+
+        if (player.age % 3 == 0) {
+            ServerWorld world = (ServerWorld) player.getWorld();
+            Vec3d look = player.getRotationVec(1.0f);
+            world.spawnParticles(ParticleTypes.CRIT,
+                    player.getX() + look.x * 0.7, player.getY() + 0.95, player.getZ() + look.z * 0.7,
+                    5, 0.22, 0.32, 0.22, 0.12);
+            world.spawnParticles(ParticleTypes.CLOUD,
+                    player.getX(), player.getY() + 0.15, player.getZ(),
+                    2, 0.28, 0.06, 0.28, 0.01);
+        }
+        if (player.age % 20 == 0) sendVisual(player, 12, 6, 22);
+    }
+
+    private static void tickKerenzikov(ServerPlayerEntity player) {
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 8, 3, true, false, false));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.JUMP_BOOST, 8, 1, true, false, false));
+        player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 8, 0, true, false, false));
+
+        if (player.age % 2 == 0) {
+            ServerWorld world = (ServerWorld) player.getWorld();
+            double x = player.getX() - player.getVelocity().x * 1.7;
+            double z = player.getZ() - player.getVelocity().z * 1.7;
+            world.spawnParticles(ParticleTypes.ELECTRIC_SPARK, x, player.getY() + 0.8, z,
+                    5, 0.12, 0.32, 0.12, 0.025);
+            world.spawnParticles(ParticleTypes.CLOUD, x, player.getY() + 0.12, z,
+                    2, 0.16, 0.06, 0.16, 0.015);
+        }
+        if (player.age % 15 == 0) sendVisual(player, 13, 5, 24);
     }
 
     private record ActiveAbility(int implantType, long expiresAt) {

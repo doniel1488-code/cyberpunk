@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["N N", "IDI", "R R"],
+  "key": {
+    "N": { "item": "minecraft:netherite_ingot" },
+    "I": { "item": "minecraft:iron_block" },
+    "D": { "item": "minecraft:diamond" },
+    "R": { "item": "minecraft:redstone_block" }
+  },
+  "result": { "id": "cyberpunk:gorilla_arms", "count": 1 }
+}

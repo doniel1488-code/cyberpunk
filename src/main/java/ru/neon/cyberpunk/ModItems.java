@@ -14,6 +14,11 @@ public final class ModItems {
     public static final Item OPTICAL_CAMO = registerImplant("optical_camo", 1);
     public static final Item BERSERK_MODULE = registerImplant("berserk_module", 2);
     public static final Item SANDEVISTAN = registerImplant("sandevistan", 3);
+    public static final Item MANTIS_ARMS = registerImplant("mantis_arms", 4);
+    public static final Item GORILLA_ARMS = registerImplant("gorilla_arms", 5);
+    public static final Item KERENZIKOV = registerImplant("kerenzikov", 6);
+    public static final Item SUBDERMAL_ARMOR = registerImplant("subdermal_armor", 7);
+    public static final Item BLOOD_PUMP = registerImplant("blood_pump", 8);
 
     private ModItems() {
     }
@@ -31,6 +36,11 @@ public final class ModItems {
             entries.add(OPTICAL_CAMO);
             entries.add(BERSERK_MODULE);
             entries.add(SANDEVISTAN);
+            entries.add(MANTIS_ARMS);
+            entries.add(GORILLA_ARMS);
+            entries.add(KERENZIKOV);
+            entries.add(SUBDERMAL_ARMOR);
+            entries.add(BLOOD_PUMP);
         });
     }
 }

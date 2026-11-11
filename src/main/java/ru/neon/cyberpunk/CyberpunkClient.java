@@ -13,6 +13,10 @@ public final class CyberpunkClient implements ClientModInitializer {
     private static KeyBinding opticalCamoKey;
     private static KeyBinding berserkKey;
     private static KeyBinding sandevistanKey;
+    private static KeyBinding mantisKey;
+    private static KeyBinding gorillaKey;
+    private static KeyBinding kerenzikovKey;
+    private static KeyBinding bloodPumpKey;
 
     @Override
     public void onInitializeClient() {
@@ -20,6 +24,10 @@ public final class CyberpunkClient implements ClientModInitializer {
         opticalCamoKey = register("key.cyberpunk.optical_camo", GLFW.GLFW_KEY_C);
         berserkKey = register("key.cyberpunk.berserk", GLFW.GLFW_KEY_X);
         sandevistanKey = register("key.cyberpunk.sandevistan", GLFW.GLFW_KEY_B);
+        mantisKey = register("key.cyberpunk.mantis_arms", GLFW.GLFW_KEY_M);
+        gorillaKey = register("key.cyberpunk.gorilla_arms", GLFW.GLFW_KEY_G);
+        kerenzikovKey = register("key.cyberpunk.kerenzikov", GLFW.GLFW_KEY_K);
+        bloodPumpKey = register("key.cyberpunk.blood_pump", GLFW.GLFW_KEY_P);
 
         CyberpunkVisuals.register();
         SandevistanTrail.register();
@@ -35,6 +43,10 @@ public final class CyberpunkClient implements ClientModInitializer {
             while (opticalCamoKey.wasPressed()) ClientPlayNetworking.send(new ActivateImplantPayload(1));
             while (berserkKey.wasPressed()) ClientPlayNetworking.send(new ActivateImplantPayload(2));
             while (sandevistanKey.wasPressed()) ClientPlayNetworking.send(new ActivateImplantPayload(3));
+            while (mantisKey.wasPressed()) ClientPlayNetworking.send(new ActivateImplantPayload(4));
+            while (gorillaKey.wasPressed()) ClientPlayNetworking.send(new ActivateImplantPayload(5));
+            while (kerenzikovKey.wasPressed()) ClientPlayNetworking.send(new ActivateImplantPayload(6));
+            while (bloodPumpKey.wasPressed()) ClientPlayNetworking.send(new ActivateImplantPayload(8));
         });
     }
 

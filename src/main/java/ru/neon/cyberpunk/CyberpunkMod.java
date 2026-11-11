@@ -1,6 +1,7 @@
 package ru.neon.cyberpunk;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.util.Identifier;
@@ -20,8 +21,10 @@ public final class CyberpunkMod implements ModInitializer {
         ModItems.initialize();
         CyberpunkNetworking.initialize();
         ServerTickEvents.END_SERVER_TICK.register(CyberwareManager::tick);
+        ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseDamageTaken, damageTaken, blocked) ->
+                CyberwareManager.onAfterDamage(entity, source, damageTaken));
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) ->
                 CyberwareManager.removePlayer(handler.player.getUuid()));
-        LOGGER.info("Cyberpunk Fabric initialized");
+        LOGGER.info("Cyberpunk Fabric initialized: expanded cyberware suite");
     }
 }

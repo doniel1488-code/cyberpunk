@@ -50,6 +50,9 @@ public final class CyberpunkVisuals {
             case 8 -> 0x00E5D9FF;
             case 9 -> 0x00FF7A70;
             case 10 -> 0x00FF173D;
+            case 12 -> 0x00FF914D;
+            case 13 -> 0x004EDBFF;
+            case 14 -> 0x00FF597D;
             default -> 0x00D6F9FF;
         };
 
@@ -99,6 +102,9 @@ public final class CyberpunkVisuals {
                 case 8 -> "visual.cyberpunk.warning";
                 case 9 -> "visual.cyberpunk.critical";
                 case 10 -> "visual.cyberpunk.psychosis";
+                case 12 -> "visual.cyberpunk.gorilla";
+                case 13 -> "visual.cyberpunk.kerenzikov";
+                case 14 -> "visual.cyberpunk.blood_pump";
                 default -> "visual.cyberpunk.system";
             };
             int textY = effectId == 10 ? height / 2 - 34 : height / 2 - 26;

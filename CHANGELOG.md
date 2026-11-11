@@ -1,31 +1,33 @@
 # Changelog
 
+## 0.1.0-alpha.6
+
+- Added Mantis Blades as a registered implant item with a dedicated keybind, recipe, model, texture and localization.
+- Added Gorilla Arms with Strength IV, Resistance I, Haste II and a server-side impact knockback effect on successful hits.
+- Added Kerenzikov with a forward dash, Speed IV, Jump Boost II, Resistance I and short-range mob time dilation.
+- Added Subdermal Armor as a passive Resistance I implant with impact feedback particles and sound.
+- Added Blood Pump as an emergency active-use implant: instant healing, Regeneration II, Absorption, poison/wither cleansing and a 45-second cooldown.
+- Added original 16x16 icons, item definitions, models, recipes and Russian/English localization for the five new chips.
+- Added CI checks for all new textures, item definitions, models and recipes.
+
 ## 0.1.0-alpha.5
 
 - Added synchronized Sandevistan trail state for nearby clients.
-- Added a client-side afterimage renderer that records player position/rotation history and draws up to seven cyan outline silhouettes using the player's current model, skin and equipment.
-- Added a short fade-out when Sandevistan ends or is interrupted.
-- Reworked cyberpsychosis into a 15-second uncontrolled rage state after a brief seizure.
-- During rage, the cyberpsycho receives Strength IV, Speed III, Resistance II, Haste II and Fire Resistance.
-- Added nearest attackable target selection within 24 blocks, direct pursuit and repeated melee attacks.
-- Rage can attack mobs, animals, villagers and non-creative/non-spectator players, then selects another target when the current one is lost.
-- Added rage particles, combat audio and recovery messaging.
-- Added server-side cleanup when a player disconnects.
-- Updated CI to verify the trail payload/renderer and the new localization key.
+- Added a client-side afterimage renderer with up to seven cyan model silhouettes.
+- Reworked cyberpsychosis into a 15-second uncontrolled rage state with target pursuit and melee attacks.
 
 ## 0.1.0-alpha.4
 
-- Rebalanced the four existing implant effects and neural load.
-- Added per-implant activation bursts, active pulses and cyberpsychosis screen interference.
+- Rebalanced four original implant effects and neural load.
+- Added activation bursts, active pulses and cyberpsychosis interference.
 
 ## 0.1.0-alpha.3
 
-- Added activation sounds, particle bursts and client-side colored HUD flashes.
-- Redesigned neural stress into warning, critical and overload thresholds.
+- Added per-implant activation sounds, particle bursts and client-side colored HUD flashes.
 
 ## 0.1.0-alpha.2
 
-- Added Sandevistan with time dilation for nearby mobs, Speed III, electric trail particles and a separate keybind.
+- Added Sandevistan with time dilation for nearby mobs.
 
 ## 0.1.0-alpha.1
 

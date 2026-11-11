@@ -35,7 +35,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          JAR="build/libs/cyberpunk-fabric-0.1.0-alpha.5.jar"
+          JAR="build/libs/cyberpunk-fabric-0.1.0-alpha.6.jar"
           test -f "$JAR"
           jar tf "$JAR" > /tmp/jar-contents.txt
           grep -q 'fabric.mod.json' /tmp/jar-contents.txt
@@ -49,13 +49,21 @@ jobs:
           grep -q 'assets/cyberpunk/textures/item/sandevistan.png' /tmp/jar-contents.txt
           grep -q 'assets/cyberpunk/models/item/sandevistan.json' /tmp/jar-contents.txt
           grep -q 'data/cyberpunk/recipe/sandevistan.json' /tmp/jar-contents.txt
+          for item in mantis_arms gorilla_arms kerenzikov subdermal_armor blood_pump; do
+            grep -qx "assets/cyberpunk/textures/item/$item.png" /tmp/jar-contents.txt
+            grep -qx "assets/cyberpunk/models/item/$item.json" /tmp/jar-contents.txt
+            grep -qx "assets/cyberpunk/items/$item.json" /tmp/jar-contents.txt
+            grep -qx "data/cyberpunk/recipe/$item.json" /tmp/jar-contents.txt
+          done
+          grep -q 'item.cyberpunk.blood_pump' /tmp/jar-contents.txt
+          grep -q 'item.cyberpunk.gorilla_arms' /tmp/jar-contents.txt
 
       - name: Validate JSON resources and locale parity
         shell: bash
         run: |
           python - <<'PY'
           import json, zipfile
-          jar = 'build/libs/cyberpunk-fabric-0.1.0-alpha.5.jar'
+          jar = 'build/libs/cyberpunk-fabric-0.1.0-alpha.6.jar'
           with zipfile.ZipFile(jar) as archive:
               for name in archive.namelist():
                   if name.endswith('.json'):
@@ -69,7 +77,7 @@ jobs:
       - name: Upload mod JAR
         uses: actions/upload-artifact@v4
         with:
-          name: cyberpunk-fabric-1.21.8-alpha.5
-          path: build/libs/cyberpunk-fabric-0.1.0-alpha.5.jar
+          name: cyberpunk-fabric-1.21.8-alpha.6
+          path: build/libs/cyberpunk-fabric-0.1.0-alpha.6.jar
           if-no-files-found: error
           retention-days: 30

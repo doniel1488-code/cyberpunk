@@ -34,5 +34,21 @@
   "visual.cyberpunk.critical": "КРИТИЧЕСКАЯ НЕЙРОНАГРУЗКА",
   "visual.cyberpunk.psychosis": "КИБЕРПСИХОЗ // РЕЖИМ ЯРОСТИ",
   "visual.cyberpunk.system": "КИБЕРСИСТЕМА",
-  "message.cyberpunk.cyberpsychosis_recovered": "НЕЙРОСЕТЬ ПЕРЕЗАГРУЖЕНА // КОНТРОЛЬ ВОССТАНОВЛЕН."
+  "message.cyberpunk.cyberpsychosis_recovered": "НЕЙРОСЕТЬ ПЕРЕЗАГРУЖЕНА // КОНТРОЛЬ ВОССТАНОВЛЕН.",
+  "item.cyberpunk.mantis_arms": "Мантис-клинки",
+  "item.cyberpunk.gorilla_arms": "Руки гориллы",
+  "item.cyberpunk.kerenzikov": "Керензиков",
+  "item.cyberpunk.subdermal_armor": "Подкожная броня",
+  "item.cyberpunk.blood_pump": "Кровяной насос",
+  "key.cyberpunk.mantis_arms": "Активировать мантис-клинки",
+  "key.cyberpunk.gorilla_arms": "Активировать руки гориллы",
+  "key.cyberpunk.kerenzikov": "Активировать Керензиков",
+  "key.cyberpunk.blood_pump": "Активировать кровяной насос",
+  "message.cyberpunk.gorilla_activated": "РУКИ ГОРИЛЛЫ // СИЛОВОЙ КОНТУР ЗАПУЩЕН",
+  "message.cyberpunk.kerenzikov_activated": "КЕРЕНЗИКОВ // РЕАКЦИЯ УСКОРЕНА",
+  "message.cyberpunk.blood_pump_activated": "КРОВЯНОЙ НАСОС // СИСТЕМА ВОССТАНОВЛЕНИЯ ЗАПУЩЕНА",
+  "message.cyberpunk.subdermal_is_passive": "ПОДКОЖНАЯ БРОНЯ // ПАССИВНАЯ ЗАЩИТА АКТИВНА",
+  "visual.cyberpunk.gorilla": "РУКИ ГОРИЛЛЫ // УСИЛЕНИЕ УДАРА",
+  "visual.cyberpunk.kerenzikov": "КЕРЕНЗИКОВ // РЕФЛЕКСЫ УСКОРЕНЫ",
+  "visual.cyberpunk.blood_pump": "КРОВЯНОЙ НАСОС // ВОССТАНОВЛЕНИЕ"
 }

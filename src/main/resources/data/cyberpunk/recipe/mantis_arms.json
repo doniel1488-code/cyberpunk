@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["N N", "ESE", "R R"],
+  "key": {
+    "N": { "item": "minecraft:netherite_ingot" },
+    "E": { "item": "minecraft:echo_shard" },
+    "S": { "item": "minecraft:iron_sword" },
+    "R": { "item": "minecraft:redstone" }
+  },
+  "result": { "id": "cyberpunk:mantis_arms", "count": 1 }
+}
