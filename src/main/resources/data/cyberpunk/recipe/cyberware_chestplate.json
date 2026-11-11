@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "A A",
+    "ASA",
+    "APA"
+  ],
+  "key": {
+    "A": {
+      "item": "cyberpunk:cybernetic_alloy"
+    },
+    "S": {
+      "item": "cyberpunk:servo_motor"
+    },
+    "P": {
+      "item": "cyberpunk:power_cell"
+    }
+  },
+  "result": {
+    "id": "cyberpunk:cyberware_chestplate",
+    "count": 1
+  }
+}
