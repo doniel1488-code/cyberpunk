@@ -2,6 +2,7 @@ package ru.neon.cyberpunk;
 
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.util.Identifier;
@@ -20,6 +21,12 @@ public final class CyberpunkMod implements ModInitializer {
     public void onInitialize() {
         ModItems.initialize();
         CyberpunkNetworking.initialize();
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) ->
+                dispatcher.register(net.minecraft.server.command.CommandManager.literal("cyberware")
+                        .executes(context -> {
+                            CyberwareManager.sendStatus(context.getSource().getPlayerOrThrow());
+                            return 1;
+                        })));
         ServerTickEvents.END_SERVER_TICK.register(CyberwareManager::tick);
         ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, baseDamageTaken, damageTaken, blocked) ->
                 CyberwareManager.onAfterDamage(entity, source, damageTaken));
