@@ -152,7 +152,7 @@ public final class CyberwareManager {
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 6, 0, true, false, false));
 
         if (player.age % 8 == 0) {
-            player.getServerWorld().spawnParticles(ParticleTypes.END_ROD,
+            ((ServerWorld) player.getWorld()).spawnParticles(ParticleTypes.END_ROD,
                     player.getX(), player.getY() + 0.9, player.getZ(),
                     2, 0.3, 0.45, 0.3, 0.01);
         }
@@ -163,7 +163,7 @@ public final class CyberwareManager {
         player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 6, 1, true, false, false));
 
         if (player.age % 4 == 0) {
-            player.getServerWorld().spawnParticles(ParticleTypes.ANGRY_VILLAGER,
+            ((ServerWorld) player.getWorld()).spawnParticles(ParticleTypes.ANGRY_VILLAGER,
                     player.getX(), player.getY() + 1.0, player.getZ(),
                     1, 0.25, 0.4, 0.25, 0.0);
         }
