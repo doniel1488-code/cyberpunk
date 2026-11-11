@@ -4,6 +4,7 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.particle.ParticleTypes;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.sound.SoundCategory;
 import net.minecraft.sound.SoundEvents;
@@ -140,7 +141,7 @@ public final class CyberwareManager {
         ));
 
         if (player.age % 3 == 0) {
-            player.getServerWorld().spawnParticles(ParticleTypes.ELECTRIC_SPARK,
+            ((ServerWorld) player.getWorld()).spawnParticles(ParticleTypes.ELECTRIC_SPARK,
                     player.getX(), player.getY() + 0.9, player.getZ(),
                     3, 0.28, 0.35, 0.28, 0.015);
         }
