@@ -3,6 +3,7 @@ package ru.neon.cyberpunk;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.item.equipment.ArmorMaterial;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.equipment.EquipmentType;
 import net.minecraft.registry.Registries;
@@ -28,11 +29,22 @@ public final class ModItems {
     public static final Item NEURAL_PROCESSOR = registerPart("neural_processor");
     public static final Item SYNTHETIC_FIBER = registerPart("synthetic_fiber");
     public static final Item POWER_CELL = registerPart("power_cell");
+    public static final Item NEURAL_CABLE = registerPart("neural_cable");
+    public static final Item OPTIC_LENS = registerPart("optic_lens");
+    public static final Item HYDRAULIC_ACTUATOR = registerPart("hydraulic_actuator");
+    public static final Item TITANIUM_PLATING = registerPart("titanium_plating");
+    public static final Item SYNTHETIC_MUSCLE = registerPart("synthetic_muscle");
+    public static final Item POWER_REGULATOR = registerPart("power_regulator");
+    public static final Item COMBAT_PROCESSOR = registerPart("combat_processor");
 
     public static final Item CYBERWARE_HELMET = registerArmor("cyberware_helmet", EquipmentType.HELMET);
     public static final Item CYBERWARE_CHESTPLATE = registerArmor("cyberware_chestplate", EquipmentType.CHESTPLATE);
     public static final Item CYBERWARE_LEGGINGS = registerArmor("cyberware_leggings", EquipmentType.LEGGINGS);
     public static final Item CYBERWARE_BOOTS = registerArmor("cyberware_boots", EquipmentType.BOOTS);
+    public static final Item TACTICAL_HELMET = registerArmor("tactical_helmet", EquipmentType.HELMET, ModArmorMaterials.ASSAULT);
+    public static final Item TACTICAL_CHESTPLATE = registerArmor("tactical_chestplate", EquipmentType.CHESTPLATE, ModArmorMaterials.ASSAULT);
+    public static final Item TACTICAL_LEGGINGS = registerArmor("tactical_leggings", EquipmentType.LEGGINGS, ModArmorMaterials.ASSAULT);
+    public static final Item TACTICAL_BOOTS = registerArmor("tactical_boots", EquipmentType.BOOTS, ModArmorMaterials.ASSAULT);
 
     private ModItems() {
     }
@@ -52,9 +64,13 @@ public final class ModItems {
     }
 
     private static Item registerArmor(String path, EquipmentType type) {
+        return registerArmor(path, type, ModArmorMaterials.CYBERWARE);
+    }
+
+    private static Item registerArmor(String path, EquipmentType type, ArmorMaterial material) {
         Identifier id = CyberpunkMod.id(path);
         RegistryKey<Item> key = RegistryKey.of(RegistryKeys.ITEM, id);
-        Item.Settings settings = new Item.Settings().registryKey(key).armor(ModArmorMaterials.CYBERWARE, type);
+        Item.Settings settings = new Item.Settings().registryKey(key).armor(material, type);
         return Registry.register(Registries.ITEM, id, new Item(settings));
     }
 
@@ -81,11 +97,22 @@ public final class ModItems {
                     entries.add(NEURAL_PROCESSOR);
                     entries.add(SYNTHETIC_FIBER);
                     entries.add(POWER_CELL);
+                    entries.add(NEURAL_CABLE);
+                    entries.add(OPTIC_LENS);
+                    entries.add(HYDRAULIC_ACTUATOR);
+                    entries.add(TITANIUM_PLATING);
+                    entries.add(SYNTHETIC_MUSCLE);
+                    entries.add(POWER_REGULATOR);
+                    entries.add(COMBAT_PROCESSOR);
 
                     entries.add(CYBERWARE_HELMET);
                     entries.add(CYBERWARE_CHESTPLATE);
                     entries.add(CYBERWARE_LEGGINGS);
                     entries.add(CYBERWARE_BOOTS);
+                    entries.add(TACTICAL_HELMET);
+                    entries.add(TACTICAL_CHESTPLATE);
+                    entries.add(TACTICAL_LEGGINGS);
+                    entries.add(TACTICAL_BOOTS);
                 })
                 .build();
         Registry.register(Registries.ITEM_GROUP, cyberwareKey, cyberwareGroup);

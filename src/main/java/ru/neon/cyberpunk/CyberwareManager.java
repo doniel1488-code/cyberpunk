@@ -728,6 +728,16 @@ public final class CyberwareManager {
             player.addStatusEffect(new StatusEffectInstance(StatusEffects.SPEED, 25, 0, true, false, false));
         }
 
+        boolean fullAssaultArmor =
+                player.getEquippedStack(EquipmentSlot.HEAD).isOf(ModItems.TACTICAL_HELMET)
+                && player.getEquippedStack(EquipmentSlot.CHEST).isOf(ModItems.TACTICAL_CHESTPLATE)
+                && player.getEquippedStack(EquipmentSlot.LEGS).isOf(ModItems.TACTICAL_LEGGINGS)
+                && player.getEquippedStack(EquipmentSlot.FEET).isOf(ModItems.TACTICAL_BOOTS);
+        if (fullAssaultArmor) {
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.RESISTANCE, 25, 1, true, false, false));
+            player.addStatusEffect(new StatusEffectInstance(StatusEffects.STRENGTH, 25, 0, true, false, false));
+        }
+
         Long rageEndsAt = OVERLOAD_UNTIL.get(uuid);
         if (rageEndsAt != null && now < rageEndsAt) {
             tickCyberpsychosisRage(player, now);

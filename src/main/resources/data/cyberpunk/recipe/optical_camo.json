@@ -3,7 +3,7 @@
   "category": "misc",
   "pattern": [
     "SPS",
-    "ANA",
+    "LNA",
     "R R"
   ],
   "key": {
@@ -13,11 +13,14 @@
     "P": {
       "item": "cyberpunk:power_cell"
     },
-    "A": {
-      "item": "cyberpunk:cybernetic_alloy"
+    "L": {
+      "item": "cyberpunk:optic_lens"
     },
     "N": {
       "item": "cyberpunk:neural_processor"
+    },
+    "A": {
+      "item": "cyberpunk:cybernetic_alloy"
     },
     "R": {
       "item": "minecraft:redstone"

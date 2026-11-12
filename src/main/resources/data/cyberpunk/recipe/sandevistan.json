@@ -2,16 +2,19 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "pattern": [
-    "ANA",
+    "CNA",
     "PBP",
     "ANA"
   ],
   "key": {
-    "A": {
-      "item": "cyberpunk:cybernetic_alloy"
+    "C": {
+      "item": "cyberpunk:neural_cable"
     },
     "N": {
       "item": "cyberpunk:neural_processor"
+    },
+    "A": {
+      "item": "cyberpunk:cybernetic_alloy"
     },
     "P": {
       "item": "cyberpunk:power_cell"

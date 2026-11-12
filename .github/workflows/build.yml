@@ -35,7 +35,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          JAR="build/libs/cyberpunk-fabric-0.1.0-alpha.8.jar"
+          JAR="build/libs/cyberpunk-fabric-0.1.0-alpha.9.jar"
           test -f "$JAR"
           jar tf "$JAR" > /tmp/jar-contents.txt
           grep -q 'fabric.mod.json' /tmp/jar-contents.txt
@@ -46,6 +46,7 @@ jobs:
           grep -q 'cyberpunk.mixins.json' /tmp/jar-contents.txt
           grep -q 'MobEntitySandevistanMixin.class' /tmp/jar-contents.txt
           grep -q 'ModArmorMaterials.class' /tmp/jar-contents.txt
+          grep -q 'CyberwareScreen.class' /tmp/jar-contents.txt
           grep -q 'assets/cyberpunk/lang/ru_ru.json' /tmp/jar-contents.txt
           grep -q 'assets/cyberpunk/textures/item/sandevistan.png' /tmp/jar-contents.txt
           grep -q 'assets/cyberpunk/models/item/sandevistan.json' /tmp/jar-contents.txt
@@ -68,7 +69,17 @@ jobs:
           grep -qx 'assets/cyberpunk/textures/entity/equipment/humanoid/cyberware.png' /tmp/jar-contents.txt
           grep -qx 'assets/cyberpunk/textures/entity/equipment/humanoid_leggings/cyberware_leggings.png' /tmp/jar-contents.txt
           grep -qx 'data/cyberpunk/tags/item/repairs_cyberware_armor.json' /tmp/jar-contents.txt
-          unzip -p "$JAR" assets/cyberpunk/lang/ru_ru.json | grep -q '"item.cyberpunk.cyberware_helmet"'
+          grep -qx 'assets/cyberpunk/equipment/tactical_exosuit.json' /tmp/jar-contents.txt
+          grep -qx 'assets/cyberpunk/textures/entity/equipment/humanoid/tactical_exosuit.png' /tmp/jar-contents.txt
+          grep -qx 'assets/cyberpunk/textures/entity/equipment/humanoid_leggings/tactical_exosuit_leggings.png' /tmp/jar-contents.txt
+          grep -qx 'data/cyberpunk/advancement/recipes/cyberware.json' /tmp/jar-contents.txt
+          for item in neural_cable optic_lens hydraulic_actuator titanium_plating synthetic_muscle power_regulator combat_processor tactical_helmet tactical_chestplate tactical_leggings tactical_boots; do
+            grep -qx "assets/cyberpunk/textures/item/$item.png" /tmp/jar-contents.txt
+            grep -qx "assets/cyberpunk/models/item/$item.json" /tmp/jar-contents.txt
+            grep -qx "assets/cyberpunk/items/$item.json" /tmp/jar-contents.txt
+            grep -qx "data/cyberpunk/recipe/$item.json" /tmp/jar-contents.txt
+          done
+          unzip -p "$JAR" assets/cyberpunk/lang/ru_ru.json | grep -q '"item.cyberpunk.tactical_helmet"'
 
       - name: Validate JSON resources and locale parity
         shell: bash
@@ -76,7 +87,7 @@ jobs:
           python - <<'PY'
           import json, struct, zipfile, zlib
 
-          jar = 'build/libs/cyberpunk-fabric-0.1.0-alpha.8.jar'
+          jar = 'build/libs/cyberpunk-fabric-0.1.0-alpha.9.jar'
 
           def validate_png(name, data):
               signature = bytes([137]) + b'PNG' + bytes([13, 10, 26, 10])
@@ -118,17 +129,19 @@ jobs:
                       if '/textures/entity/equipment/' in name:
                           assert (width, height) == (64, 32), f'{name}: expected 64x32 armor layer'
                       png_count += 1
-              assert png_count >= 20, f'expected complete texture set, found {png_count} PNG files'
+              assert png_count >= 31, f'expected complete texture set, found {png_count} PNG files'
               ru = json.loads(archive.read('assets/cyberpunk/lang/ru_ru.json'))
               en = json.loads(archive.read('assets/cyberpunk/lang/en_us.json'))
               assert set(ru) == set(en), 'ru_ru/en_us keys differ'
+              recipe_unlock = json.loads(archive.read('data/cyberpunk/advancement/recipes/cyberware.json'))
+              assert len(recipe_unlock['rewards']['recipes']) == 29, 'expected 29 recipe unlocks'
           print(f'JSON, {png_count} PNG CRC/dimension checks and locale parity passed.')
           PY
 
       - name: Upload mod JAR
         uses: actions/upload-artifact@v4
         with:
-          name: cyberpunk-fabric-1.21.8-alpha.8
-          path: build/libs/cyberpunk-fabric-0.1.0-alpha.8.jar
+          name: cyberpunk-fabric-1.21.8-alpha.9
+          path: build/libs/cyberpunk-fabric-0.1.0-alpha.9.jar
           if-no-files-found: error
           retention-days: 30
