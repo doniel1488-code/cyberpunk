@@ -35,7 +35,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          JAR="build/libs/cyberpunk-fabric-0.1.0-alpha.11.jar"
+          JAR="build/libs/cyberpunk-fabric-0.1.0-alpha.12.jar"
           test -f "$JAR"
           jar tf "$JAR" > /tmp/jar-contents.txt
           grep -q 'fabric.mod.json' /tmp/jar-contents.txt
@@ -95,7 +95,7 @@ jobs:
           python - <<'PY'
           import json, struct, zipfile, zlib
 
-          jar = 'build/libs/cyberpunk-fabric-0.1.0-alpha.11.jar'
+          jar = 'build/libs/cyberpunk-fabric-0.1.0-alpha.12.jar'
 
           def validate_png(name, data):
               signature = bytes([137]) + b'PNG' + bytes([13, 10, 26, 10])
@@ -149,7 +149,7 @@ jobs:
       - name: Upload mod JAR
         uses: actions/upload-artifact@v4
         with:
-          name: cyberpunk-fabric-1.21.8-alpha.11
-          path: build/libs/cyberpunk-fabric-0.1.0-alpha.11.jar
+          name: cyberpunk-fabric-1.21.8-alpha.12
+          path: build/libs/cyberpunk-fabric-0.1.0-alpha.12.jar
           if-no-files-found: error
           retention-days: 30
