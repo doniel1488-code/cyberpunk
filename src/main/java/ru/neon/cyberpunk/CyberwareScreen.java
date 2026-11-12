@@ -386,10 +386,10 @@ public final class CyberwareScreen extends Screen {
                 }
             } else if (activeTab == 1) {
                 int x = panelX() + 16, top = panelY() + 100;
-                int bottom = panelY() + panelH() - 20, gap = 3;
-                int rowHeight = Math.min(34, Math.max(15, (bottom - top - slotGap * 6) / SLOT_ORDER.length));
+                int bottom = panelY() + panelH() - 20, socketGap = 3;
+                int rowHeight = Math.min(34, Math.max(15, (bottom - top - socketGap * 6) / SLOT_ORDER.length));
                 for (int row = 0; row < SLOT_ORDER.length; row++) {
-                    int sy = top + row * (rowHeight + gap);
+                    int sy = top + row * (rowHeight + socketGap);
                     if (mouseX < x || mouseX > panelX() + panelW() - 16
                             || mouseY < sy || mouseY > sy + rowHeight) continue;
                     int slot = SLOT_ORDER[row];
