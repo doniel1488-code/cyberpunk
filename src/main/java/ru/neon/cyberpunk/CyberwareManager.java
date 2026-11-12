@@ -420,6 +420,7 @@ public final class CyberwareManager {
         return switch (implantType) {
             case GORILLA_ARMS -> 12;
             case KERENZIKOV -> 13;
+            case REINFORCED_TENDONS -> 17;
             case BLOOD_PUMP -> 14;
             case PROJECTILE_LAUNCHER -> 15;
             case MONOWIRE -> 16;
