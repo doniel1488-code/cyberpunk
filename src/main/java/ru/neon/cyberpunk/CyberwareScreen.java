@@ -156,7 +156,7 @@ public final class CyberwareScreen extends Screen {
         int leftWidth = panelW() - 48 - rightWidth;
         int cardGap = 5;
         int cardWidth = (leftWidth - cardGap) / 2;
-        int rowHeight = Math.min(36, (bottom - top - 44) / 7);
+        int rowHeight = Math.min(32, (bottom - top - 44) / 7);
         rowHeight = Math.max(27, rowHeight);
 
         context.drawText(textRenderer, Text.translatable("gui.cyberpunk.catalog"), x, top - 13, 0xFF8DDDE7, false);
@@ -342,7 +342,7 @@ public final class CyberwareScreen extends Screen {
                 int rightWidth = Math.min(292, (panelW() - 50) / 2);
                 int leftWidth = panelW() - 48 - rightWidth;
                 int gap = 5, cardWidth = (leftWidth - gap) / 2;
-                int rowHeight = Math.min(36, (panelH() - 94 - 30 - 44) / 7);
+                int rowHeight = Math.min(32, (panelH() - 94 - 30 - 44) / 7);
                 rowHeight = Math.max(27, rowHeight);
                 for (int i = 0; i < IMPLANTS.length; i++) {
                     int col = i / 7, row = i % 7;

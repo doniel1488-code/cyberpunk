@@ -513,7 +513,7 @@ public final class CyberwareManager {
             world.spawnParticles(ParticleTypes.ELECTRIC_SPARK, point.x, point.y, point.z,
                     3, 0.12, 0.12, 0.12, 0.025);
         }
-        world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_GENERIC_EXPLODE,
+        world.playSound(null, player.getBlockPos(), SoundEvents.ENTITY_GENERIC_EXPLODE.value(),
                 SoundCategory.PLAYERS, 0.75f, 1.4f);
         if (target != null) {
             target.damage(world, player.getDamageSources().playerAttack(player), 11.0f);
