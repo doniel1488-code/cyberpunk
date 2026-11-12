@@ -5,6 +5,8 @@
 - Added a dedicated Sockets tab for installing and removing implants instead of mixing socket controls into the implant catalog.
 - Reworked the implant catalog into a wider three-column layout and made parts/armor cards adapt to smaller GUI sizes.
 - Added RU/EN labels and instructions for socket management.
+- Added distinct custom HUD signals for each active implant: velocity streaks, camouflage brackets, berserk warnings, temporal scan slices, blade slashes, impact reticles, heartbeat waveform, launcher targeting and monowire arcs.
+- Gave Reinforced Tendons its own visual signal ID instead of reusing the recovery/status ID.
 
 
 ## 0.1.0-alpha.10
