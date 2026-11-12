@@ -776,7 +776,8 @@ public final class CyberwareManager {
         double dx = target.getX() - player.getX();
         double dz = target.getZ() - player.getZ();
         double distanceSquared = dx * dx + dz * dz;
-        if (distanceSquared > 2.8 * 2.8) {
+        if (distanceSquared > 2.8 * 2.8
+                || !hasClearShot(world, player.getEyePos(), target.getBoundingBox().getCenter(), player)) {
             Vec3d desired = new Vec3d(dx, 0.0, dz).normalize();
             Vec3d steering = findPursuitDirection(player, desired);
             if (steering.lengthSquared() > 0.001) {
