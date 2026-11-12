@@ -158,5 +158,11 @@
   "message.cyberpunk.tendons_activated": "УСИЛЕННЫЕ СУХОЖИЛИЯ // ПРЫЖКОВЫЙ ИМПУЛЬС",
   "message.cyberpunk.launcher_fired": "РАКЕТНАЯ УСТАНОВКА // ИМПУЛЬСНЫЙ ЗАРЯД ВЫПУЩЕН",
   "message.cyberpunk.monowire_slashed": "МОНОНИТЬ // РЕЖУЩИЙ ИМПУЛЬС",
-  "message.cyberpunk.biomonitor_triggered": "БИОМОНИТОР // АВАРИЙНОЕ ВОССТАНОВЛЕНИЕ"
+  "message.cyberpunk.biomonitor_triggered": "БИОМОНИТОР // АВАРИЙНОЕ ВОССТАНОВЛЕНИЕ",
+  "gui.cyberpunk.tab.sockets": "СЛОТЫ",
+  "gui.cyberpunk.installed.short": "УСТАНОВЛЕН",
+  "gui.cyberpunk.install.short": "УСТАНОВИТЬ",
+  "gui.cyberpunk.unavailable.short": "НЕДОСТУПНО",
+  "gui.cyberpunk.selected_implant": "ВЫБРАНО: %s",
+  "gui.cyberpunk.socket_instruction": "Нажми на слот: занятый снимает имплант, свободный устанавливает выбранный совместимый чип."
 }
