@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.0-alpha.11
+
+- Added a dedicated Sockets tab for installing and removing implants instead of mixing socket controls into the implant catalog.
+- Reworked the implant catalog into a wider three-column layout and made parts/armor cards adapt to smaller GUI sizes.
+- Added RU/EN labels and instructions for socket management.
+
+
 ## 0.1.0-alpha.10
 
 - Replaced potion-effect buffs and debuffs with custom server-side attribute modifiers and timed mechanics.
