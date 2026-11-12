@@ -2,7 +2,7 @@ name: Build Cyberpunk Fabric
 
 on:
   push:
-    branches: [main]
+    branches: [main, codex/alpha-7-usability]
   pull_request:
   workflow_dispatch:
 
