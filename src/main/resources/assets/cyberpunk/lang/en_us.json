@@ -158,5 +158,11 @@
   "message.cyberpunk.tendons_activated": "REINFORCED TENDONS // JUMP IMPULSE",
   "message.cyberpunk.launcher_fired": "PROJECTILE LAUNCHER // KINETIC CHARGE FIRED",
   "message.cyberpunk.monowire_slashed": "MONOWIRE // CUTTING PULSE",
-  "message.cyberpunk.biomonitor_triggered": "BIOMONITOR // EMERGENCY RECOVERY"
+  "message.cyberpunk.biomonitor_triggered": "BIOMONITOR // EMERGENCY RECOVERY",
+  "gui.cyberpunk.tab.sockets": "SOCKETS",
+  "gui.cyberpunk.installed.short": "INSTALLED",
+  "gui.cyberpunk.install.short": "INSTALL",
+  "gui.cyberpunk.unavailable.short": "UNAVAILABLE",
+  "gui.cyberpunk.selected_implant": "SELECTED: %s",
+  "gui.cyberpunk.socket_instruction": "Click a socket: occupied sockets uninstall; empty compatible sockets install the selected chip."
 }
