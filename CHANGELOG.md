@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.0-alpha.10
+
+- Replaced potion-effect buffs and debuffs with custom server-side attribute modifiers and timed mechanics.
+- Added seven exclusive cyberware sockets: neural, optics, operating system, arms, integumentary, circulatory and legs.
+- Added five implants: Projectile Launcher, Reinforced Tendons, Biomonitor, Smart Link and Monowire.
+- Reworked the cyberware panel around the implant catalog and install/remove sockets.
+- Rebuilt armor layer textures on the Minecraft 1.21.8 humanoid UV layout and strengthened the Assault Exoframe.
+- Added recipes, models, icons, keybinds and RU/EN localization for new implants.
+
+# Changelog
+
 ## 0.1.0-alpha.9
 
 - Rebuilt the cyberware interface into three tabs: implants, components and armor.

@@ -35,7 +35,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          JAR="build/libs/cyberpunk-fabric-0.1.0-alpha.9.jar"
+          JAR="build/libs/cyberpunk-fabric-0.1.0-alpha.10.jar"
           test -f "$JAR"
           jar tf "$JAR" > /tmp/jar-contents.txt
           grep -q 'fabric.mod.json' /tmp/jar-contents.txt
@@ -80,6 +80,13 @@ jobs:
             grep -qx "data/cyberpunk/recipe/$item.json" /tmp/jar-contents.txt
           done
           unzip -p "$JAR" assets/cyberpunk/lang/ru_ru.json | grep -q '"item.cyberpunk.tactical_helmet"'
+          for item in projectile_launcher reinforced_tendons biomonitor smart_link monowire; do
+            grep -qx "assets/cyberpunk/textures/item/$item.png" /tmp/jar-contents.txt
+            grep -qx "assets/cyberpunk/models/item/$item.json" /tmp/jar-contents.txt
+            grep -qx "assets/cyberpunk/items/$item.json" /tmp/jar-contents.txt
+            grep -qx "data/cyberpunk/recipe/$item.json" /tmp/jar-contents.txt
+          done
+          grep -q 'CyberwareManager.class' /tmp/jar-contents.txt
 
       - name: Validate JSON resources and locale parity
         shell: bash
@@ -87,7 +94,7 @@ jobs:
           python - <<'PY'
           import json, struct, zipfile, zlib
 
-          jar = 'build/libs/cyberpunk-fabric-0.1.0-alpha.9.jar'
+          jar = 'build/libs/cyberpunk-fabric-0.1.0-alpha.10.jar'
 
           def validate_png(name, data):
               signature = bytes([137]) + b'PNG' + bytes([13, 10, 26, 10])
@@ -129,19 +136,19 @@ jobs:
                       if '/textures/entity/equipment/' in name:
                           assert (width, height) == (64, 32), f'{name}: expected 64x32 armor layer'
                       png_count += 1
-              assert png_count >= 31, f'expected complete texture set, found {png_count} PNG files'
+              assert png_count >= 36, f'expected complete texture set, found {png_count} PNG files'
               ru = json.loads(archive.read('assets/cyberpunk/lang/ru_ru.json'))
               en = json.loads(archive.read('assets/cyberpunk/lang/en_us.json'))
               assert set(ru) == set(en), 'ru_ru/en_us keys differ'
               recipe_unlock = json.loads(archive.read('data/cyberpunk/advancement/recipes/cyberware.json'))
-              assert len(recipe_unlock['rewards']['recipes']) == 29, 'expected 29 recipe unlocks'
+              assert len(recipe_unlock['rewards']['recipes']) == 34, 'expected 34 recipe unlocks'
           print(f'JSON, {png_count} PNG CRC/dimension checks and locale parity passed.')
           PY
 
       - name: Upload mod JAR
         uses: actions/upload-artifact@v4
         with:
-          name: cyberpunk-fabric-1.21.8-alpha.9
-          path: build/libs/cyberpunk-fabric-0.1.0-alpha.9.jar
+          name: cyberpunk-fabric-1.21.8-alpha.10
+          path: build/libs/cyberpunk-fabric-0.1.0-alpha.10.jar
           if-no-files-found: error
           retention-days: 30

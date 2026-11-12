@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "GOG",
+    "RPR",
+    " H "
+  ],
+  "key": {
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "O": {
+      "item": "cyberpunk:optic_lens"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "P": {
+      "item": "cyberpunk:power_cell"
+    },
+    "H": {
+      "item": "minecraft:golden_apple"
+    }
+  },
+  "result": {
+    "id": "cyberpunk:biomonitor",
+    "count": 1
+  }
+}

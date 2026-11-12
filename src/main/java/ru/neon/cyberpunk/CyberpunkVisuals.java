@@ -57,6 +57,8 @@ public final class CyberpunkVisuals {
             case 12 -> 0x00FF914D;
             case 13 -> 0x004EDBFF;
             case 14 -> 0x00FF597D;
+            case 15 -> 0x00FFB34D;
+            case 16 -> 0x0047E6D0;
             default -> 0x00D6F9FF;
         };
 
@@ -125,6 +127,8 @@ public final class CyberpunkVisuals {
                 case 12 -> "visual.cyberpunk.gorilla";
                 case 13 -> "visual.cyberpunk.kerenzikov";
                 case 14 -> "visual.cyberpunk.blood_pump";
+                case 15 -> "visual.cyberpunk.launcher";
+                case 16 -> "visual.cyberpunk.monowire";
                 default -> "visual.cyberpunk.system";
             };
             context.drawCenteredTextWithShadow(client.textRenderer, Text.translatable(key), width / 2, 8, 0xFFFFFFFF);

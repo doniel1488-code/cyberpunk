@@ -18,11 +18,10 @@ public abstract class InventoryScreenMixin {
         MinecraftClient client = MinecraftClient.getInstance();
         int centerX = client.getWindow().getScaledWidth() / 2;
         int centerY = client.getWindow().getScaledHeight() / 2;
-        ButtonWidget button = ButtonWidget.builder(
-                Text.translatable("gui.cyberpunk.tab.short"),
-                clicked -> client.setScreen(new CyberwareScreen((Screen) (Object) this))
-        ).dimensions(centerX + 88, centerY - 15, 38, 30).build();
-
+        ButtonWidget button = ButtonWidget.builder(Text.translatable("gui.cyberpunk.tab.short"),
+                        clicked -> client.setScreen(new CyberwareScreen((Screen) (Object) this)))
+                .dimensions(centerX + 88, centerY - 14, 56, 22)
+                .build();
         ((ScreenAccessor) this).cyberpunk$addDrawableChild(button);
     }
 }

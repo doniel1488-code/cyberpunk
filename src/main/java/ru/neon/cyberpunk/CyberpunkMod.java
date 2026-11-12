@@ -2,13 +2,14 @@ package ru.neon.cyberpunk;
 
 import com.mojang.brigadier.arguments.StringArgumentType;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
 import net.minecraft.util.Identifier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.List;
 
 public final class CyberpunkMod implements ModInitializer {
@@ -32,9 +33,11 @@ public final class CyberpunkMod implements ModInitializer {
             root.then(net.minecraft.server.command.CommandManager.literal("remove")
                     .then(net.minecraft.server.command.CommandManager.argument("implant", StringArgumentType.word())
                             .suggests((context, builder) -> {
-                                for (String id : List.of("neural_accelerator", "optical_camo", "berserk_module",
+                                List.of("neural_accelerator", "optical_camo", "berserk_module",
                                         "sandevistan", "mantis_arms", "gorilla_arms", "kerenzikov",
-                                        "subdermal_armor", "blood_pump")) builder.suggest(id);
+                                        "subdermal_armor", "blood_pump", "projectile_launcher",
+                                        "reinforced_tendons", "biomonitor", "smart_link", "monowire")
+                                        .forEach(builder::suggest);
                                 return builder.buildFuture();
                             })
                             .executes(context -> {
@@ -55,6 +58,6 @@ public final class CyberpunkMod implements ModInitializer {
                 CyberwareManager.onAfterDamage(entity, source, damageTaken));
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) ->
                 CyberwareManager.removePlayer(handler.player.getUuid()));
-        LOGGER.info("Cyberpunk Fabric initialized: expanded cyberware suite");
+        LOGGER.info("Cyberpunk Fabric initialized: 14 implants / 7 cyberware sockets");
     }
 }

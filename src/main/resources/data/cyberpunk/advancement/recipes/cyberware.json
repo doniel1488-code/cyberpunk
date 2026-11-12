@@ -47,7 +47,12 @@
       "cyberpunk:tactical_helmet",
       "cyberpunk:tactical_chestplate",
       "cyberpunk:tactical_leggings",
-      "cyberpunk:tactical_boots"
+      "cyberpunk:tactical_boots",
+      "cyberpunk:projectile_launcher",
+      "cyberpunk:reinforced_tendons",
+      "cyberpunk:biomonitor",
+      "cyberpunk:smart_link",
+      "cyberpunk:monowire"
     ]
   }
 }

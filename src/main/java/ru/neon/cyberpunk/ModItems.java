@@ -3,15 +3,15 @@ package ru.neon.cyberpunk;
 import net.fabricmc.fabric.api.itemgroup.v1.FabricItemGroup;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
-import net.minecraft.item.equipment.ArmorMaterial;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.equipment.ArmorMaterial;
 import net.minecraft.item.equipment.EquipmentType;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.registry.RegistryKeys;
-import net.minecraft.util.Identifier;
 import net.minecraft.text.Text;
+import net.minecraft.util.Identifier;
 
 public final class ModItems {
     public static final Item NEURAL_ACCELERATOR = registerImplant("neural_accelerator", 0);
@@ -23,6 +23,11 @@ public final class ModItems {
     public static final Item KERENZIKOV = registerImplant("kerenzikov", 6);
     public static final Item SUBDERMAL_ARMOR = registerImplant("subdermal_armor", 7);
     public static final Item BLOOD_PUMP = registerImplant("blood_pump", 8);
+    public static final Item PROJECTILE_LAUNCHER = registerImplant("projectile_launcher", 9);
+    public static final Item REINFORCED_TENDONS = registerImplant("reinforced_tendons", 10);
+    public static final Item BIOMONITOR = registerImplant("biomonitor", 11);
+    public static final Item SMART_LINK = registerImplant("smart_link", 12);
+    public static final Item MONOWIRE = registerImplant("monowire", 13);
 
     public static final Item CYBERNETIC_ALLOY = registerPart("cybernetic_alloy");
     public static final Item SERVO_MOTOR = registerPart("servo_motor");
@@ -46,14 +51,13 @@ public final class ModItems {
     public static final Item TACTICAL_LEGGINGS = registerArmor("tactical_leggings", EquipmentType.LEGGINGS, ModArmorMaterials.ASSAULT);
     public static final Item TACTICAL_BOOTS = registerArmor("tactical_boots", EquipmentType.BOOTS, ModArmorMaterials.ASSAULT);
 
-    private ModItems() {
-    }
+    private ModItems() { }
 
-    private static Item registerImplant(String path, int implantType) {
+    private static Item registerImplant(String path, int type) {
         Identifier id = CyberpunkMod.id(path);
         RegistryKey<Item> key = RegistryKey.of(RegistryKeys.ITEM, id);
-        Item.Settings settings = new Item.Settings().registryKey(key).maxCount(1);
-        return Registry.register(Registries.ITEM, id, new ImplantItem(settings, implantType));
+        return Registry.register(Registries.ITEM, id,
+                new ImplantItem(new Item.Settings().registryKey(key).maxCount(1), type));
     }
 
     private static Item registerPart(String path) {
@@ -70,18 +74,16 @@ public final class ModItems {
     private static Item registerArmor(String path, EquipmentType type, ArmorMaterial material) {
         Identifier id = CyberpunkMod.id(path);
         RegistryKey<Item> key = RegistryKey.of(RegistryKeys.ITEM, id);
-        Item.Settings settings = new Item.Settings().registryKey(key).armor(material, type);
-        return Registry.register(Registries.ITEM, id, new Item(settings));
+        return Registry.register(Registries.ITEM, id,
+                new Item(new Item.Settings().registryKey(key).armor(material, type)));
     }
 
     public static void initialize() {
-        RegistryKey<ItemGroup> cyberwareKey =
-                RegistryKey.of(RegistryKeys.ITEM_GROUP, CyberpunkMod.id("cyberware"));
-        ItemGroup cyberwareGroup = FabricItemGroup.builder()
+        RegistryKey<ItemGroup> key = RegistryKey.of(RegistryKeys.ITEM_GROUP, CyberpunkMod.id("cyberware"));
+        ItemGroup group = FabricItemGroup.builder()
                 .displayName(Text.translatable("itemGroup.cyberpunk.cyberware"))
                 .icon(() -> new ItemStack(SANDEVISTAN))
                 .entries((context, entries) -> {
-                    // Coreware implants first, then fabrication parts, then the complete armor set.
                     entries.add(NEURAL_ACCELERATOR);
                     entries.add(OPTICAL_CAMO);
                     entries.add(BERSERK_MODULE);
@@ -91,6 +93,11 @@ public final class ModItems {
                     entries.add(KERENZIKOV);
                     entries.add(SUBDERMAL_ARMOR);
                     entries.add(BLOOD_PUMP);
+                    entries.add(PROJECTILE_LAUNCHER);
+                    entries.add(REINFORCED_TENDONS);
+                    entries.add(BIOMONITOR);
+                    entries.add(SMART_LINK);
+                    entries.add(MONOWIRE);
 
                     entries.add(CYBERNETIC_ALLOY);
                     entries.add(SERVO_MOTOR);
@@ -115,6 +122,6 @@ public final class ModItems {
                     entries.add(TACTICAL_BOOTS);
                 })
                 .build();
-        Registry.register(Registries.ITEM_GROUP, cyberwareKey, cyberwareGroup);
+        Registry.register(Registries.ITEM_GROUP, key, group);
     }
 }
