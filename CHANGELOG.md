@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.0-alpha.12
+
+- Repainted both wearable armor sets with fuller 64x32 equipment-layer textures: plated helmet, chest core, shoulder/forearm armor, reinforced boots, thigh and knee guards, and distinct cyan/red-orange power accents.
+- Kept the vanilla 1.21.8 equipment asset paths and layer dimensions; PNG integrity is covered by CI.
+
+
 ## 0.1.0-alpha.11
 
 - Added a dedicated Sockets tab for installing and removing implants instead of mixing socket controls into the implant catalog.
