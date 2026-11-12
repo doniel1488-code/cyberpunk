@@ -198,8 +198,8 @@ public final class CyberwareScreen extends Screen {
     private void drawSockets(DrawContext context) {
         int x = panelX() + 16, top = panelY() + 100;
         int bottom = panelY() + panelH() - 20;
-        int gap = 3;
-        int rowHeight = Math.min(34, Math.max(15, (bottom - top - gap * 6) / SLOT_ORDER.length));
+        int slotGap = 3;
+        int rowHeight = Math.min(34, Math.max(15, (bottom - top - slotGap * 6) / SLOT_ORDER.length));
         context.drawText(textRenderer, Text.translatable("gui.cyberpunk.slots"), x,
                 panelY() + 86, 0xFF8DDDE7, false);
         String selectedName = Text.translatable(IMPLANTS[selectedImplant].nameKey()).getString();
