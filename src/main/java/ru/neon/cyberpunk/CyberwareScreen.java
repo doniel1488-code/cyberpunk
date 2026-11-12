@@ -221,8 +221,10 @@ public final class CyberwareScreen extends Screen {
                 x + 5, infoY, 0xFF9BAFB9, false);
         String installLabel = (installedMask & (1 << selectedImplant)) != 0
                 ? "gui.cyberpunk.already.installed" : "gui.cyberpunk.install.selected";
+        context.fill(x + 3, infoY + 10, x + leftWidth - 3, infoY + 23, 0xFF123B45);
+        context.fill(x + 3, infoY + 10, x + 5, infoY + 23, 0xFF22DCE7);
         context.drawText(textRenderer, Text.translatable(installLabel),
-                x + 5, infoY + 13, 0xFF55DCCA, false);
+                x + 9, infoY + 13, 0xFF55DCCA, false);
         context.drawText(textRenderer, Text.translatable("gui.cyberpunk.slot_hint"),
                 x + 5, infoY + 25, 0xFF6E8C99, false);
     }
@@ -311,8 +313,13 @@ public final class CyberwareScreen extends Screen {
                     ? "gui.cyberpunk.equipped" : "gui.cyberpunk.in_inventory", count),
                     cx + 100, cy + 39, equipped ? 0xFF5EE0B5 : 0xFF96AAB4, false);
         }
+        int bonusY = top + 4 * (cardHeight + gapY) + 3;
         context.drawText(textRenderer, Text.translatable("gui.cyberpunk.armor.setbonus"),
-                x, top + 4 * (cardHeight + gapY) + 3, 0xFF68D8D0, false);
+                x, bonusY, 0xFF68D8D0, false);
+        context.drawText(textRenderer, Text.translatable("gui.cyberpunk.armor.bonus.standard"),
+                x, bonusY + 12, 0xFF50D7D2, false);
+        context.drawText(textRenderer, Text.translatable("gui.cyberpunk.armor.bonus.assault"),
+                x, bonusY + 24, 0xFFE8A54C, false);
     }
 
     private int countItem(Item item) {
