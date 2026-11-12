@@ -125,16 +125,18 @@ public final class CyberwareScreen extends Screen {
         drawTabs(context, mouseX, mouseY);
 
         if (activeTab == 0) drawImplants(context, mouseX, mouseY);
-        else if (activeTab == 1) drawParts(context);
+        else if (activeTab == 1) drawSockets(context);
+        else if (activeTab == 2) drawParts(context);
         else drawArmor(context);
         super.render(context, mouseX, mouseY, delta);
     }
 
     private void drawTabs(DrawContext context, int mouseX, int mouseY) {
-        int x = panelX() + 16, y = panelY() + 64, gap = 6;
-        int tabWidth = (panelW() - 44) / 3;
-        String[] keys = {"gui.cyberpunk.tab.implants", "gui.cyberpunk.tab.parts", "gui.cyberpunk.tab.armor"};
-        for (int i = 0; i < 3; i++) {
+        int x = panelX() + 16, y = panelY() + 64, gap = 5;
+        int tabWidth = (panelW() - 42) / 4;
+        String[] keys = {"gui.cyberpunk.tab.implants", "gui.cyberpunk.tab.sockets",
+                "gui.cyberpunk.tab.parts", "gui.cyberpunk.tab.armor"};
+        for (int i = 0; i < 4; i++) {
             int left = x + i * (tabWidth + gap);
             boolean selected = activeTab == i;
             boolean hover = mouseX >= left && mouseX <= left + tabWidth
@@ -149,21 +151,17 @@ public final class CyberwareScreen extends Screen {
     }
 
     private void drawImplants(DrawContext context, int mouseX, int mouseY) {
-        int x = panelX() + 16, top = panelY() + 94;
-        int bottom = panelY() + panelH() - 30;
-        int gap = 5;
-        int rightWidth = Math.min(292, (panelW() - 50) / 2);
-        int leftWidth = panelW() - 48 - rightWidth;
-        int cardGap = 5;
-        int cardWidth = (leftWidth - cardGap) / 2;
-        int rowHeight = Math.min(32, (bottom - top - 44) / 7);
-        rowHeight = Math.max(27, rowHeight);
+        int x = panelX() + 16, top = panelY() + 96;
+        int bottom = panelY() + panelH() - 58;
+        int gap = 5, columns = 3, rows = 5;
+        int cardWidth = (panelW() - 32 - gap * (columns - 1)) / columns;
+        int rowHeight = Math.min(32, Math.max(22, (bottom - top - 12) / rows - 3));
 
-        context.drawText(textRenderer, Text.translatable("gui.cyberpunk.catalog"), x, top - 13, 0xFF8DDDE7, false);
+        context.drawText(textRenderer, Text.translatable("gui.cyberpunk.catalog"),
+                x, panelY() + 86, 0xFF8DDDE7, false);
         for (int i = 0; i < IMPLANTS.length; i++) {
-            int col = i / 7;
-            int row = i % 7;
-            int cx = x + col * (cardWidth + cardGap);
+            int col = i / rows, row = i % rows;
+            int cx = x + col * (cardWidth + gap);
             int cy = top + row * (rowHeight + 3);
             boolean selected = selectedImplant == i;
             boolean installed = (installedMask & (1 << i)) != 0;
@@ -174,59 +172,67 @@ public final class CyberwareScreen extends Screen {
             context.drawItem(new ItemStack(IMPLANTS[i].item()), cx + 5, cy + (rowHeight - 16) / 2);
             int textX = cx + 25;
             String label = textRenderer.trimToWidth(Text.translatable(IMPLANTS[i].nameKey()).getString(),
-                    cardWidth - 31);
+                    cardWidth - 34);
             context.drawText(textRenderer, Text.literal(label), textX, cy + 4,
                     selected ? 0xFFE9FDFF : 0xFFD6E8EC, false);
-            context.drawText(textRenderer, Text.literal(CyberpunkClient.getActivationKeyLabel(i)),
-                    textX, cy + Math.min(17, rowHeight - 10), 0xFF82B7C6, false);
+            String state = installed ? Text.translatable("gui.cyberpunk.installed.short").getString()
+                    : CyberpunkClient.getActivationKeyLabel(i);
+            context.drawText(textRenderer, Text.literal(textRenderer.trimToWidth(state, cardWidth - 31)),
+                    textX, cy + Math.min(17, rowHeight - 9), installed ? 0xFF40E2C7 : 0xFF82B7C6, false);
         }
 
-        int dividerX = x + leftWidth + 10;
-        context.fill(dividerX, top - 2, dividerX + 1, bottom - 3, 0xFF244451);
-        int slotX = dividerX + 10;
-        context.drawText(textRenderer, Text.translatable("gui.cyberpunk.slots"), slotX,
-                top - 13, 0xFF8DDDE7, false);
-        int slotWidth = panelX() + panelW() - 16 - slotX;
-        int slotGap = 4;
-        int slotHeight = Math.min(35, (bottom - top - slotGap * 6) / 7);
-        slotHeight = Math.max(26, slotHeight);
+        int infoY = bottom + 5;
+        context.fill(x, infoY, panelX() + panelW() - 16, panelY() + panelH() - 18, 0xFF0A171F);
+        int available = panelW() - 48;
+        String description = Text.translatable("description.cyberpunk." + implantPath(selectedImplant)).getString();
+        context.drawText(textRenderer, Text.literal(textRenderer.trimToWidth(description, available)),
+                x + 6, infoY + 4, 0xFF9BAFB9, false);
+        boolean installed = (installedMask & (1 << selectedImplant)) != 0;
+        String action = installed ? "gui.cyberpunk.already.installed" : "gui.cyberpunk.install.selected";
+        context.drawText(textRenderer, Text.translatable(action), x + 6, infoY + 17,
+                installed ? 0xFF40E2C7 : 0xFF55DCCA, false);
+        context.drawText(textRenderer, Text.translatable("gui.cyberpunk.slot_hint"),
+                x + Math.min(180, available / 2), infoY + 17, 0xFF6E8C99, false);
+    }
+
+    private void drawSockets(DrawContext context) {
+        int x = panelX() + 16, top = panelY() + 100;
+        int bottom = panelY() + panelH() - 20;
+        int gap = 3;
+        int rowHeight = Math.min(34, Math.max(19, (bottom - top - gap * 6) / SLOT_ORDER.length));
+        context.drawText(textRenderer, Text.translatable("gui.cyberpunk.slots"), x,
+                panelY() + 86, 0xFF8DDDE7, false);
+        String selectedName = Text.translatable(IMPLANTS[selectedImplant].nameKey()).getString();
+        context.drawText(textRenderer, Text.translatable("gui.cyberpunk.selected_implant", selectedName),
+                x + 170, panelY() + 86, 0xFF9BBBC5, false);
+
         for (int row = 0; row < SLOT_ORDER.length; row++) {
             int slot = SLOT_ORDER[row];
-            int sy = top + row * (slotHeight + slotGap);
+            int sy = top + row * (rowHeight + gap);
             int type = installedTypeForSlot(slot);
-            context.fill(slotX, sy, slotX + slotWidth, sy + slotHeight,
+            boolean canInstall = type < 0 && CyberwareManager.getSlotForImplant(selectedImplant) == slot
+                    && countItem(IMPLANTS[selectedImplant].item()) > 0;
+            context.fill(x, sy, panelX() + panelW() - 16, sy + rowHeight,
                     type >= 0 ? 0xFF12272D : 0xFF101923);
-            context.fill(slotX, sy, slotX + 2, sy + slotHeight,
-                    type >= 0 ? 0xFF22D9C2 : 0xFF314854);
+            context.fill(x, sy, x + 3, sy + rowHeight,
+                    type >= 0 ? 0xFF22D9C2 : canInstall ? 0xFFE8A54C : 0xFF314854);
             String slotLabel = Text.translatable(CyberwareManager.getSlotTranslationKey(slot)).getString();
-            context.drawText(textRenderer, Text.literal(textRenderer.trimToWidth(slotLabel,
-                    slotWidth - 55)), slotX + 7, sy + 3, 0xFFB7D1DA, false);
-            if (type >= 0) {
-                String implantName = Text.translatable(CyberwareManager.getImplantNameKey(type)).getString();
-                context.drawText(textRenderer, Text.literal(textRenderer.trimToWidth(implantName,
-                        slotWidth - 58)), slotX + 7, sy + Math.min(17, slotHeight - 9), 0xFF40E2C7, false);
-                context.drawText(textRenderer, Text.translatable("gui.cyberpunk.remove.short"),
-                        slotX + slotWidth - 46, sy + Math.min(17, slotHeight - 9), 0xFFFF8190, false);
-            } else {
-                context.drawText(textRenderer, Text.translatable("gui.cyberpunk.slot.empty"),
-                        slotX + 7, sy + Math.min(17, slotHeight - 9), 0xFF738D99, false);
-            }
+            context.drawText(textRenderer, Text.literal(textRenderer.trimToWidth(slotLabel, 145)),
+                    x + 10, sy + Math.max(2, (rowHeight - 9) / 2), 0xFFB7D1DA, false);
+            String contents = type >= 0
+                    ? Text.translatable(CyberwareManager.getImplantNameKey(type)).getString()
+                    : Text.translatable("gui.cyberpunk.slot.empty").getString();
+            context.drawText(textRenderer, Text.literal(textRenderer.trimToWidth(contents, 190)),
+                    x + 165, sy + Math.max(2, (rowHeight - 9) / 2), type >= 0 ? 0xFF40E2C7 : 0xFF738D99, false);
+            String action = type >= 0 ? Text.translatable("gui.cyberpunk.remove.short").getString()
+                    : canInstall ? Text.translatable("gui.cyberpunk.install.short").getString()
+                    : Text.translatable("gui.cyberpunk.unavailable.short").getString();
+            int actionColor = type >= 0 ? 0xFFFF8190 : canInstall ? 0xFFE8A54C : 0xFF536873;
+            context.drawText(textRenderer, Text.literal(action),
+                    panelX() + panelW() - 86, sy + Math.max(2, (rowHeight - 9) / 2), actionColor, false);
         }
-
-        int infoY = bottom - 34;
-        context.fill(x, infoY - 4, x + leftWidth, bottom, 0xFF0A171F);
-        String descriptionKey = "description.cyberpunk." + implantPath(selectedImplant);
-        String description = Text.translatable(descriptionKey).getString();
-        context.drawText(textRenderer, Text.literal(textRenderer.trimToWidth(description, leftWidth - 10)),
-                x + 5, infoY, 0xFF9BAFB9, false);
-        String installLabel = (installedMask & (1 << selectedImplant)) != 0
-                ? "gui.cyberpunk.already.installed" : "gui.cyberpunk.install.selected";
-        context.fill(x + 3, infoY + 10, x + leftWidth - 3, infoY + 23, 0xFF123B45);
-        context.fill(x + 3, infoY + 10, x + 5, infoY + 23, 0xFF22DCE7);
-        context.drawText(textRenderer, Text.translatable(installLabel),
-                x + 9, infoY + 13, 0xFF55DCCA, false);
-        context.drawText(textRenderer, Text.translatable("gui.cyberpunk.slot_hint"),
-                x + 5, infoY + 25, 0xFF6E8C99, false);
+        context.drawText(textRenderer, Text.translatable("gui.cyberpunk.socket_instruction"),
+                x, panelY() + panelH() - 14, 0xFF7896A3, false);
     }
 
     private int installedTypeForSlot(int slot) {
@@ -335,25 +341,25 @@ public final class CyberwareScreen extends Screen {
     @Override
     public boolean mouseClicked(double mouseX, double mouseY, int button) {
         if (button == 0) {
-            int tx = panelX() + 16, ty = panelY() + 64;
-            int tabWidth = (panelW() - 44) / 3;
-            for (int i = 0; i < 3; i++) {
-                int left = tx + i * (tabWidth + 6);
+            int tx = panelX() + 16, ty = panelY() + 64, gap = 5;
+            int tabWidth = (panelW() - 42) / 4;
+            for (int i = 0; i < 4; i++) {
+                int left = tx + i * (tabWidth + gap);
                 if (mouseX >= left && mouseX <= left + tabWidth && mouseY >= ty && mouseY <= ty + 21) {
                     activeTab = i;
                     return true;
                 }
             }
+
             if (activeTab == 0) {
-                int x = panelX() + 16, top = panelY() + 94;
-                int rightWidth = Math.min(292, (panelW() - 50) / 2);
-                int leftWidth = panelW() - 48 - rightWidth;
-                int gap = 5, cardWidth = (leftWidth - gap) / 2;
-                int rowHeight = Math.min(32, (panelH() - 94 - 30 - 44) / 7);
-                rowHeight = Math.max(27, rowHeight);
+                int x = panelX() + 16, top = panelY() + 96;
+                int gapX = 5, columns = 3, rows = 5;
+                int cardWidth = (panelW() - 32 - gapX * (columns - 1)) / columns;
+                int bottom = panelY() + panelH() - 58;
+                int rowHeight = Math.min(32, Math.max(22, (bottom - top - 12) / rows - 3));
                 for (int i = 0; i < IMPLANTS.length; i++) {
-                    int col = i / 7, row = i % 7;
-                    int cx = x + col * (cardWidth + gap);
+                    int col = i / rows, row = i % rows;
+                    int cx = x + col * (cardWidth + gapX);
                     int cy = top + row * (rowHeight + 3);
                     if (mouseX >= cx && mouseX <= cx + cardWidth
                             && mouseY >= cy && mouseY <= cy + rowHeight) {
@@ -361,27 +367,30 @@ public final class CyberwareScreen extends Screen {
                         return true;
                     }
                 }
-
-                int bottom = panelY() + panelH() - 30;
-                int slotX = x + leftWidth + 20;
-                int slotWidth = panelX() + panelW() - 16 - slotX;
-                int slotHeight = Math.min(35, (bottom - top - 24) / 7);
-                slotHeight = Math.max(26, slotHeight);
-                for (int row = 0; row < SLOT_ORDER.length; row++) {
-                    int sy = top + row * (slotHeight + 4);
-                    int slot = SLOT_ORDER[row];
-                    int type = installedTypeForSlot(slot);
-                    if (type >= 0 && mouseX >= slotX && mouseX <= slotX + slotWidth
-                            && mouseY >= sy && mouseY <= sy + slotHeight) {
-                        ClientPlayNetworking.send(new CyberwareActionPayload(2, slot));
-                        return true;
+                int infoY = bottom + 5;
+                if (mouseX >= x && mouseX <= panelX() + panelW() - 16
+                        && mouseY >= infoY && mouseY <= panelY() + panelH() - 18) {
+                    if ((installedMask & (1 << selectedImplant)) == 0
+                            && client != null && client.getNetworkHandler() != null) {
+                        ClientPlayNetworking.send(new CyberwareActionPayload(1, selectedImplant));
                     }
+                    return true;
                 }
-
-                int infoY = bottom - 34;
-                if (mouseX >= x && mouseX <= x + leftWidth
-                        && mouseY >= infoY - 4 && mouseY <= bottom) {
-                    if (client != null && client.getNetworkHandler() != null) {
+            } else if (activeTab == 1) {
+                int x = panelX() + 16, top = panelY() + 100;
+                int bottom = panelY() + panelH() - 20, gap = 3;
+                int rowHeight = Math.min(34, Math.max(19, (bottom - top - gap * 6) / SLOT_ORDER.length));
+                for (int row = 0; row < SLOT_ORDER.length; row++) {
+                    int sy = top + row * (rowHeight + gap);
+                    if (mouseX < x || mouseX > panelX() + panelW() - 16
+                            || mouseY < sy || mouseY > sy + rowHeight) continue;
+                    int slot = SLOT_ORDER[row];
+                    int installed = installedTypeForSlot(slot);
+                    if (installed >= 0) {
+                        ClientPlayNetworking.send(new CyberwareActionPayload(2, slot));
+                    } else if (CyberwareManager.getSlotForImplant(selectedImplant) == slot
+                            && countItem(IMPLANTS[selectedImplant].item()) > 0
+                            && client != null && client.getNetworkHandler() != null) {
                         ClientPlayNetworking.send(new CyberwareActionPayload(1, selectedImplant));
                     }
                     return true;
@@ -408,8 +417,8 @@ public final class CyberwareScreen extends Screen {
         return false;
     }
 
-    private int panelW() { return Math.min(650, Math.max(440, width - 12)); }
-    private int panelH() { return Math.min(410, Math.max(300, height - 12)); }
+    private int panelW() { return Math.min(650, Math.max(360, width - 12)); }
+    private int panelH() { return Math.min(410, Math.max(260, height - 12)); }
     private int panelX() { return (width - panelW()) / 2; }
     private int panelY() { return (height - panelH()) / 2; }
 
