@@ -112,7 +112,7 @@
   "description.cyberpunk.power_regulator": "Стабилизирует питание сложных киберсистем.",
   "description.cyberpunk.combat_processor": "Боевой модуль для тяжёлой кибернетики.",
   "gui.cyberpunk.tab.implants": "ИМПЛАНТЫ",
-  "gui.cyberpunk.tab.parts": "КОМПОНЕНТЫ",
+  "gui.cyberpunk.tab.parts": "ДЕТАЛИ",
   "gui.cyberpunk.tab.armor": "БРОНЯ",
   "gui.cyberpunk.in_inventory": "В ИНВЕНТАРЕ: %s",
   "gui.cyberpunk.equipped": "НАДЕТО",
