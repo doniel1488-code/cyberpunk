@@ -208,7 +208,7 @@ public final class CyberwareScreen extends Screen {
 
         for (int row = 0; row < SLOT_ORDER.length; row++) {
             int slot = SLOT_ORDER[row];
-            int sy = top + row * (rowHeight + gap);
+            int sy = top + row * (rowHeight + slotGap);
             int type = installedTypeForSlot(slot);
             boolean canInstall = type < 0 && CyberwareManager.getSlotForImplant(selectedImplant) == slot
                     && countItem(IMPLANTS[selectedImplant].item()) > 0;
