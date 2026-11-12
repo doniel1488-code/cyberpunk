@@ -23,6 +23,8 @@ import net.minecraft.text.Text;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.hit.HitResult;
+import net.minecraft.world.RaycastContext;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.Vec3d;
 
@@ -237,7 +239,7 @@ public final class CyberwareManager {
                     Text.translatable(getSlotTranslationKey(getSlotForImplant(implantType)))), true);
             return false;
         }
-        chip.decrement(1);
+        if (!player.isCreative()) chip.decrement(1);
         player.addCommandTag(tag);
         player.sendMessage(Text.translatable("message.cyberpunk.implant_installed",
                 Text.translatable(getImplantNameKey(implantType)),
@@ -498,11 +500,15 @@ public final class CyberwareManager {
         ServerWorld world = (ServerWorld) player.getWorld();
         Vec3d look = player.getRotationVec(1.0f).normalize();
         Vec3d origin = player.getEyePos();
-        Box search = new Box(origin, origin.add(look.multiply(18.0))).expand(1.8);
+        Vec3d desiredEnd = origin.add(look.multiply(18.0));
+        var obstruction = world.raycast(new RaycastContext(origin, desiredEnd,
+                RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, player));
+        Vec3d end = obstruction.getType() == HitResult.Type.MISS ? desiredEnd : obstruction.getPos();
+        Box search = new Box(origin, end).expand(1.8);
         LivingEntity target = world.getEntitiesByClass(LivingEntity.class, search,
                 entity -> isValidRageTarget(player, entity)
-                        && entity.getPos().subtract(origin).normalize().dotProduct(look) > 0.91)
-                .stream().min(Comparator.comparingDouble(player::squaredDistanceTo)).orElse(null);
+                        && entity.getBoundingBox().expand(0.25).raycast(origin, end).isPresent())
+                .stream().min(Comparator.comparingDouble(entity -> entity.squaredDistanceTo(origin))).orElse(null);
 
         for (int i = 1; i <= 12; i++) {
             Vec3d point = origin.add(look.multiply(i * 1.35));
@@ -525,6 +531,12 @@ public final class CyberwareManager {
         }
     }
 
+    private static boolean hasClearShot(ServerWorld world, Vec3d start, Vec3d end, ServerPlayerEntity shooter) {
+        var hit = world.raycast(new RaycastContext(start, end,
+                RaycastContext.ShapeType.COLLIDER, RaycastContext.FluidHandling.NONE, shooter));
+        return hit.getType() == HitResult.Type.MISS;
+    }
+
     private static void fireMonowire(ServerPlayerEntity player) {
         ServerWorld world = (ServerWorld) player.getWorld();
         Vec3d look = player.getRotationVec(1.0f).normalize();
@@ -532,9 +544,11 @@ public final class CyberwareManager {
         int hits = 0;
         for (LivingEntity target : world.getEntitiesByClass(LivingEntity.class, area,
                 entity -> isValidRageTarget(player, entity))) {
-            Vec3d toTarget = target.getBoundingBox().getCenter().subtract(player.getEyePos());
+            Vec3d targetPoint = target.getBoundingBox().getCenter();
+            Vec3d toTarget = targetPoint.subtract(player.getEyePos());
             double distance = toTarget.length();
             if (distance > 5.0 || distance < 0.01 || toTarget.normalize().dotProduct(look) < 0.35) continue;
+            if (!hasClearShot(world, player.getEyePos(), targetPoint, player)) continue;
             if (target.damage(world, player.getDamageSources().playerAttack(player), 8.0f)) {
                 applyBleed(target, 50);
                 target.takeKnockback(0.45, player.getX() - target.getX(), player.getZ() - target.getZ());
