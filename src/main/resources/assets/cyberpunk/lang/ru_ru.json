@@ -164,5 +164,6 @@
   "gui.cyberpunk.install.short": "УСТАНОВИТЬ",
   "gui.cyberpunk.unavailable.short": "НЕДОСТУПНО",
   "gui.cyberpunk.selected_implant": "ВЫБРАНО: %s",
-  "gui.cyberpunk.socket_instruction": "Нажми на слот: занятый снимает имплант, свободный устанавливает выбранный совместимый чип."
+  "gui.cyberpunk.socket_instruction": "Нажми на слот: занятый снимает имплант, свободный устанавливает выбранный совместимый чип.",
+  "visual.cyberpunk.tendons": "УСИЛЕННЫЕ СУХОЖИЛИЯ // ИМПУЛЬС ПРЫЖКА"
 }
