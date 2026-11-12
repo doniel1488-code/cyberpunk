@@ -19,9 +19,9 @@ public abstract class InventoryScreenMixin {
         int centerX = client.getWindow().getScaledWidth() / 2;
         int centerY = client.getWindow().getScaledHeight() / 2;
         ButtonWidget button = ButtonWidget.builder(
-                Text.translatable("gui.cyberpunk.tab"),
+                Text.translatable("gui.cyberpunk.tab.short"),
                 clicked -> client.setScreen(new CyberwareScreen((Screen) (Object) this))
-        ).dimensions(centerX - 88, centerY - 105, 104, 20).build();
+        ).dimensions(centerX + 88, centerY - 15, 38, 30).build();
 
         ((ScreenAccessor) this).cyberpunk$addDrawableChild(button);
     }

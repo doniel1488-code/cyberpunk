@@ -119,5 +119,8 @@
   "gui.cyberpunk.defense": "ЗАЩИТА: %s",
   "gui.cyberpunk.armor.standard": "БАЗОВЫЙ ЭКЗОКАРКАС",
   "gui.cyberpunk.armor.assault": "ШТУРМОВОЙ ЭКЗОКАРКАС",
-  "gui.cyberpunk.armor_bonus.standard": "Бонус комплекта: базовый — Resistance II + Speed I; штурмовой — Resistance II + Strength I."
+  "gui.cyberpunk.armor_bonus.standard": "Бонус комплекта: базовый — Resistance II + Speed I; штурмовой — Resistance II + Strength I.",
+  "gui.cyberpunk.tab.short": "КБ",
+  "gui.cyberpunk.armor.bonus.standard": "КОМПЛЕКТ: RES II + SPEED I",
+  "gui.cyberpunk.armor.bonus.assault": "КОМПЛЕКТ: RES II + STRENGTH I"
 }

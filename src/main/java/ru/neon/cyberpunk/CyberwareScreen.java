@@ -37,14 +37,14 @@ public final class CyberwareScreen extends Screen {
         new PartCard(ModItems.COMBAT_PROCESSOR,"item.cyberpunk.combat_processor","description.cyberpunk.combat_processor")
     };
     private static final ArmorCard[] ARMOR={
-        new ArmorCard(ModItems.CYBERWARE_HELMET,"item.cyberpunk.cyberware_helmet",EquipmentSlot.HEAD,3,"gui.cyberpunk.armor.standard"),
-        new ArmorCard(ModItems.CYBERWARE_CHESTPLATE,"item.cyberpunk.cyberware_chestplate",EquipmentSlot.CHEST,8,"gui.cyberpunk.armor.standard"),
-        new ArmorCard(ModItems.CYBERWARE_LEGGINGS,"item.cyberpunk.cyberware_leggings",EquipmentSlot.LEGS,6,"gui.cyberpunk.armor.standard"),
-        new ArmorCard(ModItems.CYBERWARE_BOOTS,"item.cyberpunk.cyberware_boots",EquipmentSlot.FEET,3,"gui.cyberpunk.armor.standard"),
-        new ArmorCard(ModItems.TACTICAL_HELMET,"item.cyberpunk.tactical_helmet",EquipmentSlot.HEAD,3,"gui.cyberpunk.armor.assault"),
-        new ArmorCard(ModItems.TACTICAL_CHESTPLATE,"item.cyberpunk.tactical_chestplate",EquipmentSlot.CHEST,8,"gui.cyberpunk.armor.assault"),
-        new ArmorCard(ModItems.TACTICAL_LEGGINGS,"item.cyberpunk.tactical_leggings",EquipmentSlot.LEGS,6,"gui.cyberpunk.armor.assault"),
-        new ArmorCard(ModItems.TACTICAL_BOOTS,"item.cyberpunk.tactical_boots",EquipmentSlot.FEET,3,"gui.cyberpunk.armor.assault")
+        new ArmorCard(ModItems.CYBERWARE_HELMET,"item.cyberpunk.cyberware_helmet",EquipmentSlot.HEAD,3,"gui.cyberpunk.armor.standard","gui.cyberpunk.armor.bonus.standard"),
+        new ArmorCard(ModItems.CYBERWARE_CHESTPLATE,"item.cyberpunk.cyberware_chestplate",EquipmentSlot.CHEST,8,"gui.cyberpunk.armor.standard","gui.cyberpunk.armor.bonus.standard"),
+        new ArmorCard(ModItems.CYBERWARE_LEGGINGS,"item.cyberpunk.cyberware_leggings",EquipmentSlot.LEGS,6,"gui.cyberpunk.armor.standard","gui.cyberpunk.armor.bonus.standard"),
+        new ArmorCard(ModItems.CYBERWARE_BOOTS,"item.cyberpunk.cyberware_boots",EquipmentSlot.FEET,3,"gui.cyberpunk.armor.standard","gui.cyberpunk.armor.bonus.standard"),
+        new ArmorCard(ModItems.TACTICAL_HELMET,"item.cyberpunk.tactical_helmet",EquipmentSlot.HEAD,3,"gui.cyberpunk.armor.assault","gui.cyberpunk.armor.bonus.assault"),
+        new ArmorCard(ModItems.TACTICAL_CHESTPLATE,"item.cyberpunk.tactical_chestplate",EquipmentSlot.CHEST,8,"gui.cyberpunk.armor.assault","gui.cyberpunk.armor.bonus.assault"),
+        new ArmorCard(ModItems.TACTICAL_LEGGINGS,"item.cyberpunk.tactical_leggings",EquipmentSlot.LEGS,6,"gui.cyberpunk.armor.assault","gui.cyberpunk.armor.bonus.assault"),
+        new ArmorCard(ModItems.TACTICAL_BOOTS,"item.cyberpunk.tactical_boots",EquipmentSlot.FEET,3,"gui.cyberpunk.armor.assault","gui.cyberpunk.armor.bonus.assault")
     };
 
     private static CyberwareScreen activeScreen;
@@ -155,7 +155,8 @@ public final class CyberwareScreen extends Screen {
             c.drawText(textRenderer,Text.literal(textRenderer.trimToWidth(Text.translatable(ARMOR[i].nameKey()).getString(),cw-34)),x+29,y+8,0xFFE6F4F8,false);
             c.drawText(textRenderer,Text.translatable(ARMOR[i].setKey()),x+29,y+22,0xFF8FAEBC,false);
             c.drawText(textRenderer,Text.translatable("gui.cyberpunk.defense",ARMOR[i].defense()),x+7,y+43,0xFFFFC66E,false);
-            if(ch>=78)c.drawText(textRenderer,Text.translatable(equipped?"gui.cyberpunk.equipped":"gui.cyberpunk.in_inventory",count),x+7,y+57,equipped?0xFF5EE0B5:0xFF96AAB4,false);
+            c.drawText(textRenderer,Text.translatable(ARMOR[i].bonusKey()),x+7,y+58,0xFF55CDBD,false);
+            if(ch>=78)c.drawText(textRenderer,Text.translatable(equipped?"gui.cyberpunk.equipped":"gui.cyberpunk.in_inventory",count),x+7,y+75,equipped?0xFF5EE0B5:0xFF96AAB4,false);
         }
     }
 
@@ -200,5 +201,5 @@ public final class CyberwareScreen extends Screen {
 
     private record ImplantCard(Item item,String nameKey,String descriptionKey,int keyIndex){}
     private record PartCard(Item item,String nameKey,String descriptionKey){}
-    private record ArmorCard(Item item,String nameKey,EquipmentSlot slot,int defense,String setKey){}
+    private record ArmorCard(Item item,String nameKey,EquipmentSlot slot,int defense,String setKey,String bonusKey){}
 }
