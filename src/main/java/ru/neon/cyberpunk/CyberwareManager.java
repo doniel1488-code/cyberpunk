@@ -1213,7 +1213,7 @@ public final class CyberwareManager {
             world.spawnParticles(ParticleTypes.ELECTRIC_SPARK, player.getX(),
                     player.getY() + 0.15, player.getZ(), 5, 0.28, 0.12, 0.28, 0.025);
         }
-        if (player.age % 20 == 0) sendVisual(player, 13, 5, 24);
+        if (player.age % 20 == 0) sendVisual(player, 17, 5, 24);
     }
 
     private record ActiveAbility(int implantType, long expiresAt) { }
