@@ -155,7 +155,7 @@ public final class CyberwareScreen extends Screen {
         int bottom = panelY() + panelH() - 58;
         int gap = 5, columns = 3, rows = 5;
         int cardWidth = (panelW() - 32 - gap * (columns - 1)) / columns;
-        int rowHeight = Math.min(32, Math.max(22, (bottom - top - 12) / rows - 3));
+        int rowHeight = Math.min(32, Math.max(16, (bottom - top - 12) / rows - 3));
 
         context.drawText(textRenderer, Text.translatable("gui.cyberpunk.catalog"),
                 x, panelY() + 86, 0xFF8DDDE7, false);
@@ -199,7 +199,7 @@ public final class CyberwareScreen extends Screen {
         int x = panelX() + 16, top = panelY() + 100;
         int bottom = panelY() + panelH() - 20;
         int gap = 3;
-        int rowHeight = Math.min(34, Math.max(19, (bottom - top - gap * 6) / SLOT_ORDER.length));
+        int rowHeight = Math.min(34, Math.max(15, (bottom - top - gap * 6) / SLOT_ORDER.length));
         context.drawText(textRenderer, Text.translatable("gui.cyberpunk.slots"), x,
                 panelY() + 86, 0xFF8DDDE7, false);
         String selectedName = Text.translatable(IMPLANTS[selectedImplant].nameKey()).getString();
@@ -217,12 +217,12 @@ public final class CyberwareScreen extends Screen {
             context.fill(x, sy, x + 3, sy + rowHeight,
                     type >= 0 ? 0xFF22D9C2 : canInstall ? 0xFFE8A54C : 0xFF314854);
             String slotLabel = Text.translatable(CyberwareManager.getSlotTranslationKey(slot)).getString();
-            context.drawText(textRenderer, Text.literal(textRenderer.trimToWidth(slotLabel, 145)),
+            context.drawText(textRenderer, Text.literal(textRenderer.trimToWidth(slotLabel, Math.min(145, panelW() - 250))),
                     x + 10, sy + Math.max(2, (rowHeight - 9) / 2), 0xFFB7D1DA, false);
             String contents = type >= 0
                     ? Text.translatable(CyberwareManager.getImplantNameKey(type)).getString()
                     : Text.translatable("gui.cyberpunk.slot.empty").getString();
-            context.drawText(textRenderer, Text.literal(textRenderer.trimToWidth(contents, 190)),
+            context.drawText(textRenderer, Text.literal(textRenderer.trimToWidth(contents, Math.max(45, Math.min(190, panelW() - 267)))),
                     x + 165, sy + Math.max(2, (rowHeight - 9) / 2), type >= 0 ? 0xFF40E2C7 : 0xFF738D99, false);
             String action = type >= 0 ? Text.translatable("gui.cyberpunk.remove.short").getString()
                     : canInstall ? Text.translatable("gui.cyberpunk.install.short").getString()
@@ -269,22 +269,24 @@ public final class CyberwareScreen extends Screen {
         int width = panelW() - 32;
         int gapX = 7, gapY = 7, cols = 3;
         int cardWidth = (width - gapX * (cols - 1)) / cols;
-        int cardHeight = 66;
+        int cardHeight = Math.min(66, Math.max(30, (panelH() - 114 - gapY * 3) / 4));
         for (int i = 0; i < PARTS.length; i++) {
             int cx = x + (i % cols) * (cardWidth + gapX);
             int cy = top + (i / cols) * (cardHeight + gapY);
             int count = countItem(PARTS[i].item());
             context.fill(cx, cy, cx + cardWidth, cy + cardHeight, 0xFF101923);
             context.fill(cx, cy, cx + cardWidth, cy + 1, 0xFF315061);
-            context.drawItem(new ItemStack(PARTS[i].item()), cx + 7, cy + 9);
+            context.drawItem(new ItemStack(PARTS[i].item()), cx + 7, cy + Math.max(2, (cardHeight - 16) / 2));
             String name = Text.translatable("item.cyberpunk." + PARTS[i].path()).getString();
             context.drawText(textRenderer, Text.literal(textRenderer.trimToWidth(name,
-                    cardWidth - 34)), cx + 29, cy + 8, 0xFFE6F4F8, false);
+                    cardWidth - 34)), cx + 29, cy + 5, 0xFFE6F4F8, false);
             context.drawText(textRenderer, Text.translatable("gui.cyberpunk.in_inventory", count),
-                    cx + 29, cy + 22, count > 0 ? 0xFF56DDBE : 0xFF8296A2, false);
-            String desc = Text.translatable("description.cyberpunk." + PARTS[i].path()).getString();
-            context.drawText(textRenderer, Text.literal(textRenderer.trimToWidth(desc,
-                    cardWidth - 12)), cx + 7, cy + 45, 0xFF9AAEB8, false);
+                    cx + 29, cy + 19, count > 0 ? 0xFF56DDBE : 0xFF8296A2, false);
+            if (cardHeight >= 55) {
+                String desc = Text.translatable("description.cyberpunk." + PARTS[i].path()).getString();
+                context.drawText(textRenderer, Text.literal(textRenderer.trimToWidth(desc,
+                        cardWidth - 12)), cx + 7, cy + 45, 0xFF9AAEB8, false);
+            }
         }
     }
 
@@ -293,7 +295,7 @@ public final class CyberwareScreen extends Screen {
         int width = panelW() - 32;
         int cols = 2, gapX = 8, gapY = 8;
         int cardWidth = (width - gapX) / 2;
-        int cardHeight = 57;
+        int cardHeight = Math.min(57, Math.max(30, (panelH() - 114 - gapY * 3) / 4));
         for (int i = 0; i < ARMOR.length; i++) {
             ArmorCard armor = ARMOR[i];
             int cx = x + (i % cols) * (cardWidth + gapX);
@@ -311,21 +313,27 @@ public final class CyberwareScreen extends Screen {
                     cardWidth - 40)), cx + 32, cy + 7, 0xFFE6F4F8, false);
             String setName = Text.translatable(armor.assault()
                     ? "gui.cyberpunk.armor.assault" : "gui.cyberpunk.armor.standard").getString();
-            context.drawText(textRenderer, Text.literal(setName), cx + 32, cy + 21,
-                    armor.assault() ? 0xFFE8A54C : 0xFF50D7D2, false);
+            if (cardHeight >= 48) {
+                context.drawText(textRenderer, Text.literal(setName), cx + 32, cy + 21,
+                        armor.assault() ? 0xFFE8A54C : 0xFF50D7D2, false);
+            }
+            int detailY = cy + cardHeight - 13;
             context.drawText(textRenderer, Text.translatable("gui.cyberpunk.defense", armor.defense()),
-                    cx + 8, cy + 39, 0xFFFFC66E, false);
+                    cx + 8, detailY, 0xFFFFC66E, false);
             context.drawText(textRenderer, Text.translatable(equipped
                     ? "gui.cyberpunk.equipped" : "gui.cyberpunk.in_inventory", count),
-                    cx + 100, cy + 39, equipped ? 0xFF5EE0B5 : 0xFF96AAB4, false);
+                    cx + Math.min(100, cardWidth / 2), detailY,
+                    equipped ? 0xFF5EE0B5 : 0xFF96AAB4, false);
         }
-        int bonusY = top + 4 * (cardHeight + gapY) + 3;
-        context.drawText(textRenderer, Text.translatable("gui.cyberpunk.armor.setbonus"),
-                x, bonusY, 0xFF68D8D0, false);
-        context.drawText(textRenderer, Text.translatable("gui.cyberpunk.armor.bonus.standard"),
-                x, bonusY + 12, 0xFF50D7D2, false);
-        context.drawText(textRenderer, Text.translatable("gui.cyberpunk.armor.bonus.assault"),
-                x, bonusY + 24, 0xFFE8A54C, false);
+        if (cardHeight >= 52) {
+            int bonusY = top + 4 * (cardHeight + gapY) + 3;
+            context.drawText(textRenderer, Text.translatable("gui.cyberpunk.armor.setbonus"),
+                    x, bonusY, 0xFF68D8D0, false);
+            context.drawText(textRenderer, Text.translatable("gui.cyberpunk.armor.bonus.standard"),
+                    x, bonusY + 12, 0xFF50D7D2, false);
+            context.drawText(textRenderer, Text.translatable("gui.cyberpunk.armor.bonus.assault"),
+                    x, bonusY + 24, 0xFFE8A54C, false);
+        }
     }
 
     private int countItem(Item item) {
