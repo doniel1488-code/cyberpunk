@@ -208,7 +208,7 @@ public final class CyberwareScreen extends Screen {
 
         for (int row = 0; row < SLOT_ORDER.length; row++) {
             int slot = SLOT_ORDER[row];
-            int sy = top + row * (rowHeight + gap);
+            int sy = top + row * (rowHeight + slotGap);
             int type = installedTypeForSlot(slot);
             boolean canInstall = type < 0 && CyberwareManager.getSlotForImplant(selectedImplant) == slot
                     && countItem(IMPLANTS[selectedImplant].item()) > 0;
@@ -364,7 +364,7 @@ public final class CyberwareScreen extends Screen {
                 int gapX = 5, columns = 3, rows = 5;
                 int cardWidth = (panelW() - 32 - gapX * (columns - 1)) / columns;
                 int bottom = panelY() + panelH() - 58;
-                int rowHeight = Math.min(32, Math.max(22, (bottom - top - 12) / rows - 3));
+                int rowHeight = Math.min(32, Math.max(16, (bottom - top - 12) / rows - 3));
                 for (int i = 0; i < IMPLANTS.length; i++) {
                     int col = i / rows, row = i % rows;
                     int cx = x + col * (cardWidth + gapX);
@@ -386,8 +386,8 @@ public final class CyberwareScreen extends Screen {
                 }
             } else if (activeTab == 1) {
                 int x = panelX() + 16, top = panelY() + 100;
-                int bottom = panelY() + panelH() - 20, gap = 3;
-                int rowHeight = Math.min(34, Math.max(19, (bottom - top - gap * 6) / SLOT_ORDER.length));
+                int bottom = panelY() + panelH() - 20, slotGap = 3;
+                int rowHeight = Math.min(34, Math.max(15, (bottom - top - slotGap * 6) / SLOT_ORDER.length));
                 for (int row = 0; row < SLOT_ORDER.length; row++) {
                     int sy = top + row * (rowHeight + gap);
                     if (mouseX < x || mouseX > panelX() + panelW() - 16
