@@ -59,7 +59,7 @@ public final class CyberwareManager {
     private static final int IMPLANT_COUNT = 14;
 
     private static final double SANDEVISTAN_RADIUS = 64.0;
-    private static final Map<UUID, ActiveAbility> ACTIVE = new HashMap<>();
+    private static final Map<UUID, Map<Integer, ActiveAbility>> ACTIVE = new HashMap<>();
     private static final Map<UUID, Map<Integer, Long>> COOLDOWNS = new HashMap<>();
     private static final Map<UUID, Float> STRESS = new HashMap<>();
     private static final Map<UUID, Integer> STRESS_TIER = new HashMap<>();
@@ -266,10 +266,10 @@ public final class CyberwareManager {
             player.sendMessage(Text.translatable("message.cyberpunk.not_installed"), true);
             return;
         }
-        ActiveAbility active = ACTIVE.get(uuid);
-        if (active != null && active.implantType() == implantType) {
-            ACTIVE.remove(uuid);
+        Map<Integer, ActiveAbility> active = ACTIVE.get(uuid);
+        if (active != null && active.remove(implantType) != null) {
             finishAbility(player, implantType);
+            if (active.isEmpty()) ACTIVE.remove(uuid);
         }
         Map<Integer, Long> cooldowns = COOLDOWNS.get(uuid);
         if (cooldowns != null) {
@@ -374,11 +374,6 @@ public final class CyberwareManager {
             player.sendMessage(Text.translatable("message.cyberpunk.monowire_slashed"), true);
             return;
         }
-        if (ACTIVE.containsKey(uuid)) {
-            player.sendMessage(Text.translatable("message.cyberpunk.already_active"), true);
-            return;
-        }
-
         int duration;
         int cooldown;
         switch (implantType) {
@@ -395,7 +390,8 @@ public final class CyberwareManager {
 
         addStress(player, activationStress(implantType));
         if (isOverloaded(uuid, now)) return;
-        ACTIVE.put(uuid, new ActiveAbility(implantType, now + duration));
+        ACTIVE.computeIfAbsent(uuid, ignored -> new HashMap<>())
+                .put(implantType, new ActiveAbility(implantType, now + duration));
         cooldowns.put(implantType, now + cooldown);
         activationBurst(player, implantType);
         if (implantType == OPTICAL_CAMO) player.setInvisible(true);
@@ -627,8 +623,8 @@ public final class CyberwareManager {
         if (target.getWorld().isClient || damageTaken <= 0.0f) return;
 
         if (source.getAttacker() instanceof ServerPlayerEntity attacker && target != attacker) {
-            ActiveAbility ability = ACTIVE.get(attacker.getUuid());
-            if (ability != null && ability.implantType() == GORILLA_ARMS) {
+            Map<Integer, ActiveAbility> active = ACTIVE.get(attacker.getUuid());
+            if (active != null && active.containsKey(GORILLA_ARMS)) {
                 Vec3d direction = target.getPos().subtract(attacker.getPos());
                 Vec3d horizontal = new Vec3d(direction.x, 0.0, direction.z);
                 if (horizontal.lengthSquared() > 0.001) {
@@ -642,7 +638,7 @@ public final class CyberwareManager {
                             SoundCategory.PLAYERS, 0.45f, 1.4f);
                 }
             }
-            if (ability != null && ability.implantType() == MANTIS_ARMS) applyBleed(target, 60);
+            if (active != null && active.containsKey(MANTIS_ARMS)) applyBleed(target, 60);
             if (playerHas(attacker, SMART_LINK)) applyBleed(target, 35);
         }
 
@@ -712,8 +708,10 @@ public final class CyberwareManager {
         UUID uuid = player.getUuid();
         long now = player.getWorld().getTime();
         if (isOverloaded(uuid, now)) return;
-        ActiveAbility interrupted = ACTIVE.remove(uuid);
-        if (interrupted != null) finishAbility(player, interrupted.implantType());
+        Map<Integer, ActiveAbility> interrupted = ACTIVE.remove(uuid);
+        if (interrupted != null) {
+            interrupted.values().forEach(ability -> finishAbility(player, ability.implantType()));
+        }
         OVERLOAD_UNTIL.put(uuid, now + 300L);
         STRESS.put(uuid, 30.0f);
         STRESS_TIER.put(uuid, 0);
@@ -861,11 +859,11 @@ public final class CyberwareManager {
         if (mob.getWorld().isClient || !mob.isAlive()) return false;
         for (PlayerEntity player : mob.getWorld().getPlayers()) {
             if (!(player instanceof ServerPlayerEntity owner) || !owner.isAlive()) continue;
-            ActiveAbility ability = ACTIVE.get(owner.getUuid());
-            if (ability == null) continue;
-            if (ability.implantType() == SANDEVISTAN
+            Map<Integer, ActiveAbility> active = ACTIVE.get(owner.getUuid());
+            if (active == null) continue;
+            if (active.containsKey(SANDEVISTAN)
                     && owner.squaredDistanceTo(mob) <= SANDEVISTAN_RADIUS * SANDEVISTAN_RADIUS) return true;
-            if (ability.implantType() == KERENZIKOV
+            if (active.containsKey(KERENZIKOV)
                     && owner.squaredDistanceTo(mob) <= 12.0 * 12.0) return true;
         }
         return false;
@@ -971,77 +969,90 @@ public final class CyberwareManager {
             sendVisual(player, 11, 18, 82);
         }
 
-        ActiveAbility ability = ACTIVE.get(uuid);
-        if (ability != null && now >= ability.expiresAt()) {
-            ACTIVE.remove(uuid);
-            finishAbility(player, ability.implantType());
-            ability = null;
-            player.sendMessage(Text.translatable("message.cyberpunk.ability_ended"), true);
-            sendVisual(player, 11, 8, 45);
+        Map<Integer, ActiveAbility> active = ACTIVE.get(uuid);
+        float stressPerTick = 0.0f;
+        if (active != null) {
+            for (ActiveAbility ability : new java.util.ArrayList<>(active.values())) {
+                int type = ability.implantType();
+                if (now >= ability.expiresAt()) {
+                    active.remove(type);
+                    finishAbility(player, type);
+                    player.sendMessage(Text.translatable("message.cyberpunk.ability_ended"), true);
+                    sendVisual(player, 11, 8, 45);
+                    continue;
+                }
+
+                switch (type) {
+                    case ACCELERATOR -> {
+                        stats.speed += 0.42;
+                        stats.mining += 2.5;
+                        tickAccelerator(player);
+                    }
+                    case OPTICAL_CAMO -> {
+                        stats.speed += 0.12;
+                        player.setInvisible(true);
+                        tickOpticalCamo(player);
+                    }
+                    case BERSERK -> {
+                        stats.attack += 6.0;
+                        stats.armor += 3.0;
+                        stats.knockback += 0.25;
+                        stats.speed += 0.10;
+                        tickBerserk(player);
+                    }
+                    case SANDEVISTAN -> {
+                        stats.speed += 0.36;
+                        stats.mining += 1.5;
+                        tickSandevistan(player);
+                    }
+                    case MANTIS_ARMS -> {
+                        stats.attack += 4.5;
+                        stats.attackSpeed += 0.38;
+                        tickMantisArms(player);
+                    }
+                    case GORILLA_ARMS -> {
+                        stats.attack += 7.0;
+                        stats.attackSpeed += 0.15;
+                        stats.knockback += 1.2;
+                        stats.mining += 2.0;
+                        tickGorillaArms(player);
+                    }
+                    case KERENZIKOV -> {
+                        stats.speed += 0.44;
+                        stats.jump += 0.28;
+                        tickKerenzikov(player);
+                    }
+                    case REINFORCED_TENDONS -> {
+                        stats.speed += 0.15;
+                        stats.jump += 0.42;
+                        stats.step += 0.35;
+                        tickTendons(player);
+                    }
+                    default -> active.remove(type);
+                }
+
+                stressPerTick += switch (type) {
+                    case ACCELERATOR -> 0.035f;
+                    case OPTICAL_CAMO -> 0.050f;
+                    case BERSERK -> 0.080f;
+                    case SANDEVISTAN -> 0.110f;
+                    case MANTIS_ARMS -> 0.065f;
+                    case GORILLA_ARMS -> 0.095f;
+                    case KERENZIKOV -> 0.060f;
+                    case REINFORCED_TENDONS -> 0.045f;
+                    default -> 0.0f;
+                };
+            }
+            if (active.isEmpty()) ACTIVE.remove(uuid);
         }
 
-        if (ability != null) {
-            switch (ability.implantType()) {
-                case ACCELERATOR -> {
-                    stats.speed += 0.42;
-                    stats.mining += 2.5;
-                    tickAccelerator(player);
-                }
-                case OPTICAL_CAMO -> {
-                    stats.speed += 0.12;
-                    player.setInvisible(true);
-                    tickOpticalCamo(player);
-                }
-                case BERSERK -> {
-                    stats.attack += 6.0;
-                    stats.armor += 3.0;
-                    stats.knockback += 0.25;
-                    stats.speed += 0.10;
-                    tickBerserk(player);
-                }
-                case SANDEVISTAN -> {
-                    stats.speed += 0.36;
-                    stats.mining += 1.5;
-                    tickSandevistan(player);
-                }
-                case MANTIS_ARMS -> {
-                    stats.attack += 4.5;
-                    stats.attackSpeed += 0.38;
-                    tickMantisArms(player);
-                }
-                case GORILLA_ARMS -> {
-                    stats.attack += 7.0;
-                    stats.attackSpeed += 0.15;
-                    stats.knockback += 1.2;
-                    stats.mining += 2.0;
-                    tickGorillaArms(player);
-                }
-                case KERENZIKOV -> {
-                    stats.speed += 0.44;
-                    stats.jump += 0.28;
-                    tickKerenzikov(player);
-                }
-                case REINFORCED_TENDONS -> {
-                    stats.speed += 0.15;
-                    stats.jump += 0.42;
-                    stats.step += 0.35;
-                    tickTendons(player);
-                }
-                default -> ACTIVE.remove(uuid);
-            }
-
-            float stressPerTick = switch (ability.implantType()) {
-                case ACCELERATOR -> 0.035f;
-                case OPTICAL_CAMO -> 0.050f;
-                case BERSERK -> 0.080f;
-                case SANDEVISTAN -> 0.110f;
-                case MANTIS_ARMS -> 0.065f;
-                case GORILLA_ARMS -> 0.095f;
-                case KERENZIKOV -> 0.060f;
-                case REINFORCED_TENDONS -> 0.045f;
-                default -> 0.0f;
-            };
+        if (stressPerTick > 0.0f) {
             addStress(player, stressPerTick);
+            if (isOverloaded(uuid, now)) {
+                tickCyberpsychosisRage(player, now, stats);
+                applyStats(player, stats);
+                return;
+            }
         } else {
             float stress = Math.max(0.0f, STRESS.getOrDefault(uuid, 0.0f) - 0.045f);
             STRESS.put(uuid, stress);
