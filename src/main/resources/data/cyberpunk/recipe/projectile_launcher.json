@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "IRI",
+    "TCT",
+    " P "
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "R": {
+      "item": "minecraft:redstone"
+    },
+    "T": {
+      "item": "minecraft:fire_charge"
+    },
+    "C": {
+      "item": "cyberpunk:combat_processor"
+    },
+    "P": {
+      "item": "cyberpunk:power_cell"
+    }
+  },
+  "result": {
+    "id": "cyberpunk:projectile_launcher",
+    "count": 1
+  }
+}

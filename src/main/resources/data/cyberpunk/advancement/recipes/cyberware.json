@@ -1,0 +1,58 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_crafting_table": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "minecraft:crafting_table"
+          }
+        ]
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_crafting_table"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "cyberpunk:neural_accelerator",
+      "cyberpunk:optical_camo",
+      "cyberpunk:berserk_module",
+      "cyberpunk:sandevistan",
+      "cyberpunk:mantis_arms",
+      "cyberpunk:gorilla_arms",
+      "cyberpunk:kerenzikov",
+      "cyberpunk:subdermal_armor",
+      "cyberpunk:blood_pump",
+      "cyberpunk:cybernetic_alloy",
+      "cyberpunk:servo_motor",
+      "cyberpunk:neural_processor",
+      "cyberpunk:synthetic_fiber",
+      "cyberpunk:power_cell",
+      "cyberpunk:neural_cable",
+      "cyberpunk:optic_lens",
+      "cyberpunk:hydraulic_actuator",
+      "cyberpunk:titanium_plating",
+      "cyberpunk:synthetic_muscle",
+      "cyberpunk:power_regulator",
+      "cyberpunk:combat_processor",
+      "cyberpunk:cyberware_helmet",
+      "cyberpunk:cyberware_chestplate",
+      "cyberpunk:cyberware_leggings",
+      "cyberpunk:cyberware_boots",
+      "cyberpunk:tactical_helmet",
+      "cyberpunk:tactical_chestplate",
+      "cyberpunk:tactical_leggings",
+      "cyberpunk:tactical_boots",
+      "cyberpunk:projectile_launcher",
+      "cyberpunk:reinforced_tendons",
+      "cyberpunk:biomonitor",
+      "cyberpunk:smart_link",
+      "cyberpunk:monowire"
+    ]
+  }
+}

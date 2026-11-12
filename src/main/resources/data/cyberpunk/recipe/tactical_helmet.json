@@ -1,0 +1,30 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "TLL",
+    "HCH",
+    "A A"
+  ],
+  "key": {
+    "T": {
+      "item": "cyberpunk:titanium_plating"
+    },
+    "L": {
+      "item": "cyberpunk:optic_lens"
+    },
+    "H": {
+      "item": "cyberpunk:hydraulic_actuator"
+    },
+    "C": {
+      "item": "cyberpunk:combat_processor"
+    },
+    "A": {
+      "item": "cyberpunk:cybernetic_alloy"
+    }
+  },
+  "result": {
+    "id": "cyberpunk:tactical_helmet",
+    "count": 1
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "equipment",
+  "pattern": [
+    "AGA",
+    "NPN",
+    " G "
+  ],
+  "key": {
+    "A": {
+      "item": "minecraft:amethyst_shard"
+    },
+    "G": {
+      "item": "minecraft:gold_ingot"
+    },
+    "N": {
+      "item": "cyberpunk:neural_cable"
+    },
+    "P": {
+      "item": "cyberpunk:combat_processor"
+    }
+  },
+  "result": {
+    "id": "cyberpunk:smart_link",
+    "count": 1
+  }
+}

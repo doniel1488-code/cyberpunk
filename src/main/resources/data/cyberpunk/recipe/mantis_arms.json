@@ -1,12 +1,27 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": ["N N", "ESE", "R R"],
+  "pattern": [
+    "S S",
+    "ANA",
+    "P P"
+  ],
   "key": {
-    "N": { "item": "minecraft:netherite_ingot" },
-    "E": { "item": "minecraft:echo_shard" },
-    "S": { "item": "minecraft:iron_sword" },
-    "R": { "item": "minecraft:redstone" }
+    "S": {
+      "item": "cyberpunk:servo_motor"
+    },
+    "A": {
+      "item": "cyberpunk:cybernetic_alloy"
+    },
+    "N": {
+      "item": "cyberpunk:neural_processor"
+    },
+    "P": {
+      "item": "cyberpunk:power_cell"
+    }
   },
-  "result": { "id": "cyberpunk:mantis_arms", "count": 1 }
+  "result": {
+    "id": "cyberpunk:mantis_arms",
+    "count": 1
+  }
 }

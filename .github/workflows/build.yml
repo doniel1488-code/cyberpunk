@@ -2,7 +2,7 @@ name: Build Cyberpunk Fabric
 
 on:
   push:
-    branches: [main]
+    branches: [main, codex/alpha-7-usability]
   pull_request:
   workflow_dispatch:
 
@@ -35,7 +35,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          JAR="build/libs/cyberpunk-fabric-0.1.0-alpha.6.jar"
+          JAR="build/libs/cyberpunk-fabric-0.1.0-alpha.12.jar"
           test -f "$JAR"
           jar tf "$JAR" > /tmp/jar-contents.txt
           grep -q 'fabric.mod.json' /tmp/jar-contents.txt
@@ -45,6 +45,8 @@ jobs:
           grep -q 'SandevistanTrail.class' /tmp/jar-contents.txt
           grep -q 'cyberpunk.mixins.json' /tmp/jar-contents.txt
           grep -q 'MobEntitySandevistanMixin.class' /tmp/jar-contents.txt
+          grep -q 'ModArmorMaterials.class' /tmp/jar-contents.txt
+          grep -q 'CyberwareScreen.class' /tmp/jar-contents.txt
           grep -q 'assets/cyberpunk/lang/ru_ru.json' /tmp/jar-contents.txt
           grep -q 'assets/cyberpunk/textures/item/sandevistan.png' /tmp/jar-contents.txt
           grep -q 'assets/cyberpunk/models/item/sandevistan.json' /tmp/jar-contents.txt
@@ -57,27 +59,97 @@ jobs:
           done
           unzip -p "$JAR" assets/cyberpunk/lang/ru_ru.json | grep -q '"item.cyberpunk.blood_pump"'
           unzip -p "$JAR" assets/cyberpunk/lang/ru_ru.json | grep -q '"item.cyberpunk.gorilla_arms"'
+          for item in cybernetic_alloy servo_motor neural_processor synthetic_fiber power_cell cyberware_helmet cyberware_chestplate cyberware_leggings cyberware_boots; do
+            grep -qx "assets/cyberpunk/textures/item/$item.png" /tmp/jar-contents.txt
+            grep -qx "assets/cyberpunk/models/item/$item.json" /tmp/jar-contents.txt
+            grep -qx "assets/cyberpunk/items/$item.json" /tmp/jar-contents.txt
+            grep -qx "data/cyberpunk/recipe/$item.json" /tmp/jar-contents.txt
+          done
+          grep -qx 'assets/cyberpunk/equipment/cyberware.json' /tmp/jar-contents.txt
+          grep -qx 'assets/cyberpunk/textures/entity/equipment/humanoid/cyberware.png' /tmp/jar-contents.txt
+          grep -qx 'assets/cyberpunk/textures/entity/equipment/humanoid_leggings/cyberware_leggings.png' /tmp/jar-contents.txt
+          grep -qx 'data/cyberpunk/tags/item/repairs_cyberware_armor.json' /tmp/jar-contents.txt
+          grep -qx 'assets/cyberpunk/equipment/tactical_exosuit.json' /tmp/jar-contents.txt
+          grep -qx 'assets/cyberpunk/textures/entity/equipment/humanoid/tactical_exosuit.png' /tmp/jar-contents.txt
+          grep -qx 'assets/cyberpunk/textures/entity/equipment/humanoid_leggings/tactical_exosuit_leggings.png' /tmp/jar-contents.txt
+          grep -qx 'data/cyberpunk/advancement/recipes/cyberware.json' /tmp/jar-contents.txt
+          for item in neural_cable optic_lens hydraulic_actuator titanium_plating synthetic_muscle power_regulator combat_processor tactical_helmet tactical_chestplate tactical_leggings tactical_boots; do
+            grep -qx "assets/cyberpunk/textures/item/$item.png" /tmp/jar-contents.txt
+            grep -qx "assets/cyberpunk/models/item/$item.json" /tmp/jar-contents.txt
+            grep -qx "assets/cyberpunk/items/$item.json" /tmp/jar-contents.txt
+            grep -qx "data/cyberpunk/recipe/$item.json" /tmp/jar-contents.txt
+          done
+          unzip -p "$JAR" assets/cyberpunk/lang/ru_ru.json | grep -q '"item.cyberpunk.tactical_helmet"'
+          for item in projectile_launcher reinforced_tendons biomonitor smart_link monowire; do
+            grep -qx "assets/cyberpunk/textures/item/$item.png" /tmp/jar-contents.txt
+            grep -qx "assets/cyberpunk/models/item/$item.json" /tmp/jar-contents.txt
+            grep -qx "assets/cyberpunk/items/$item.json" /tmp/jar-contents.txt
+            grep -qx "data/cyberpunk/recipe/$item.json" /tmp/jar-contents.txt
+          done
+          grep -q 'CyberwareManager.class' /tmp/jar-contents.txt
+          grep -q 'gui.cyberpunk.tab.sockets' <(unzip -p "$JAR" assets/cyberpunk/lang/ru_ru.json)
 
       - name: Validate JSON resources and locale parity
         shell: bash
         run: |
           python - <<'PY'
-          import json, zipfile
-          jar = 'build/libs/cyberpunk-fabric-0.1.0-alpha.6.jar'
+          import json, struct, zipfile, zlib
+
+          jar = 'build/libs/cyberpunk-fabric-0.1.0-alpha.12.jar'
+
+          def validate_png(name, data):
+              signature = bytes([137]) + b'PNG' + bytes([13, 10, 26, 10])
+              assert data.startswith(signature), f'{name}: invalid PNG signature'
+              offset = len(signature)
+              width = height = None
+              saw_idat = saw_iend = False
+              while offset + 12 <= len(data):
+                  length = struct.unpack('>I', data[offset:offset + 4])[0]
+                  kind = data[offset + 4:offset + 8]
+                  chunk_end = offset + 8 + length
+                  assert chunk_end + 4 <= len(data), f'{name}: truncated {kind!r} chunk'
+                  chunk = data[offset + 4:chunk_end]
+                  expected_crc = struct.unpack('>I', data[chunk_end:chunk_end + 4])[0]
+                  actual_crc = zlib.crc32(chunk) & 0xffffffff
+                  assert actual_crc == expected_crc, f'{name}: bad CRC in {kind.decode("ascii", "replace")} chunk'
+                  payload = data[offset + 8:chunk_end]
+                  if kind == b'IHDR':
+                      width, height = struct.unpack('>II', payload[:8])
+                  elif kind == b'IDAT':
+                      saw_idat = True
+                  elif kind == b'IEND':
+                      saw_iend = True
+                      offset = chunk_end + 4
+                      break
+                  offset = chunk_end + 4
+              assert width and height and saw_idat and saw_iend, f'{name}: incomplete PNG'
+              return width, height
+
           with zipfile.ZipFile(jar) as archive:
+              png_count = 0
               for name in archive.namelist():
                   if name.endswith('.json'):
                       json.loads(archive.read(name))
+                  elif name.endswith('.png'):
+                      width, height = validate_png(name, archive.read(name))
+                      if name.startswith('assets/cyberpunk/textures/item/'):
+                          assert (width, height) == (16, 16), f'{name}: expected 16x16 item icon'
+                      if '/textures/entity/equipment/' in name:
+                          assert (width, height) == (64, 32), f'{name}: expected 64x32 armor layer'
+                      png_count += 1
+              assert png_count >= 36, f'expected complete texture set, found {png_count} PNG files'
               ru = json.loads(archive.read('assets/cyberpunk/lang/ru_ru.json'))
               en = json.loads(archive.read('assets/cyberpunk/lang/en_us.json'))
               assert set(ru) == set(en), 'ru_ru/en_us keys differ'
-          print('JSON and locale checks passed.')
+              recipe_unlock = json.loads(archive.read('data/cyberpunk/advancement/recipes/cyberware.json'))
+              assert len(recipe_unlock['rewards']['recipes']) == 34, 'expected 34 recipe unlocks'
+          print(f'JSON, {png_count} PNG CRC/dimension checks and locale parity passed.')
           PY
 
       - name: Upload mod JAR
         uses: actions/upload-artifact@v4
         with:
-          name: cyberpunk-fabric-1.21.8-alpha.6
-          path: build/libs/cyberpunk-fabric-0.1.0-alpha.6.jar
+          name: cyberpunk-fabric-1.21.8-alpha.12
+          path: build/libs/cyberpunk-fabric-0.1.0-alpha.12.jar
           if-no-files-found: error
           retention-days: 30

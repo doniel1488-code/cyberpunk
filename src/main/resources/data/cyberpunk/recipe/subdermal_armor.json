@@ -1,12 +1,24 @@
 {
   "type": "minecraft:crafting_shaped",
   "category": "misc",
-  "pattern": ["IDI", "NGN", "III"],
+  "pattern": [
+    "SAS",
+    "APA",
+    "SAS"
+  ],
   "key": {
-    "I": { "item": "minecraft:iron_ingot" },
-    "D": { "item": "minecraft:diamond_chestplate" },
-    "N": { "item": "minecraft:netherite_scrap" },
-    "G": { "item": "minecraft:gold_block" }
+    "S": {
+      "item": "cyberpunk:synthetic_fiber"
+    },
+    "A": {
+      "item": "cyberpunk:cybernetic_alloy"
+    },
+    "P": {
+      "item": "cyberpunk:power_cell"
+    }
   },
-  "result": { "id": "cyberpunk:subdermal_armor", "count": 1 }
+  "result": {
+    "id": "cyberpunk:subdermal_armor",
+    "count": 1
+  }
 }

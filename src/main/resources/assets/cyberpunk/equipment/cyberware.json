@@ -1,0 +1,14 @@
+{
+  "layers": {
+    "humanoid": [
+      {
+        "texture": "cyberpunk:cyberware"
+      }
+    ],
+    "humanoid_leggings": [
+      {
+        "texture": "cyberpunk:cyberware_leggings"
+      }
+    ]
+  }
+}
