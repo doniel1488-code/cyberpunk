@@ -112,7 +112,7 @@
   "description.cyberpunk.power_regulator": "Stabilizes power delivery to advanced cyberware.",
   "description.cyberpunk.combat_processor": "A combat module for heavy cybernetic systems.",
   "gui.cyberpunk.tab.implants": "IMPLANTS",
-  "gui.cyberpunk.tab.parts": "COMPONENTS",
+  "gui.cyberpunk.tab.parts": "PARTS",
   "gui.cyberpunk.tab.armor": "ARMOR",
   "gui.cyberpunk.in_inventory": "IN INVENTORY: %s",
   "gui.cyberpunk.equipped": "EQUIPPED",
